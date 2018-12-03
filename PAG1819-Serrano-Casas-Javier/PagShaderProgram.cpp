@@ -97,6 +97,7 @@ bool PagShaderProgram::setUniform(std::string name, GLint value) {
 
 bool PagShaderProgram::setUniform(std::string name, GLfloat value) {
 	GLint location = glGetUniformLocation(handler, name.c_str());
+
 	if (location >= 0) {
 		// - Aquí usamos la función glUniform que recibe un argumento de tipo
 		// GLfloat
@@ -125,6 +126,7 @@ bool PagShaderProgram::setUniform(std::string name, glm::mat4 value) {
 
 bool PagShaderProgram::setUniform(std::string name, glm::vec3 value) {
 	GLint location = glGetUniformLocation(handler, name.c_str());
+
 	if (location >= 0) {
 		// - Aquí usamos la función glUniform que recibe un argumento de tipo
 		// vec3 con valores GLfloat y expresado como un array

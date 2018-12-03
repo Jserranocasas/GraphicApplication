@@ -38,7 +38,7 @@ void Pag3DGroup::drawAsTriangles(PagShaderProgram *shader, glm::mat4 vp, glm::ma
 		shader->setUniform("mModelViewProj", modelViewProject);
 		shader->setUniform("mModelView", modelView);
 
-		elements[i]->getMaterial().sendUniform(*shader);
+		elements[i]->getMaterial().sendUniform(shader);
 		elements[i]->drawAsTriangles(shader, modelViewProject, modelView);
 	}
 }

@@ -253,10 +253,9 @@ void PagRevolutionObject::computeTangents(PagRevObjParts part, unsigned int slic
 
 	// Para la tapa inferior
 	if (part == PAG_BOTTOM_FAN) {
-			for (unsigned int s = 0; s <= slices; s++) {
-				bottom->addTangent(glm::vec3(-sin(s*deltaRad), 0.0, -cos(s*deltaRad)));
-			}
-		
+		for (unsigned int s = 0; s <= slices; s++) {
+			bottom->addTangent(glm::vec3(-sin(s*deltaRad), 0.0, -cos(s*deltaRad)));
+		}
 	}
 	// Para la tapa superior	
 	else if (part == PAG_TOP_FAN) {

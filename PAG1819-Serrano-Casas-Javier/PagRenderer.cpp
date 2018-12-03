@@ -15,6 +15,12 @@ PagRenderer::PagRenderer() : debug(false), lines(false), tmesh(false), points(tr
 }
 
 PagRenderer::~PagRenderer() {
+	delete camera;
+	delete objects;
+	delete pointShader;
+	delete linesShader;
+	delete ADSShader;
+	delete debugShader;
 }
 
 // - Acceder al singleton.
@@ -55,7 +61,7 @@ void PagRenderer::refreshCallback() {
 		pointShader->setUniform("vColor", glm::vec3(1.0f, 0.0f, 0.0f));
 
 		// - Dibujo el objeto como puntos
-		objects.drawAsPoints(pointShader, camera->getMatrixViewProject());
+		objects->drawAsPoints(pointShader, camera->getMatrixViewProject());
 	}
 
 	if (lines) {	// - Si dibujas como lineas activado
@@ -70,7 +76,7 @@ void PagRenderer::refreshCallback() {
 		linesShader->setUniform("vColor", glm::vec3(0.0f, 0.0f, 1.0f));
 
 		// - Dibujo el objeto como lineas.
-		objects.drawAsLines(linesShader, camera->getMatrixViewProject());
+		objects->drawAsLines(linesShader, camera->getMatrixViewProject());
 	}
 
 	if (tmesh) {	// - Si dibujar como triángulos sombreados activado
@@ -115,11 +121,15 @@ void PagRenderer::refreshCallback() {
 			light[i]->execute(*ADSShader, *camera);
 
 			// - Dibujo el objeto como triángulos sombreados.
-			objects.drawAsTriangles(ADSShader, camera->getMatrixViewProject(), camera->getMatrixView());
+			objects->drawAsTriangles(ADSShader, camera->getMatrixViewProject(), camera->getMatrixView());
 		}
 	}
 
 	if (debug) {	// - Si dibujar modo debug
+
+		glDisable(GLenum(GL_BLEND));
+		glDepthFunc(GLenum(GL_LESS));
+
 		// - Activamos el shader program que se va a usar.
 		debugShader->use();
 	
@@ -127,7 +137,7 @@ void PagRenderer::refreshCallback() {
 		debugShader->setUniform("debugOption", debugOption);
 
 		// - Dibujo el objeto como debug.
-		objects.drawAsTriangles(debugShader, camera->getMatrixViewProject(), camera->getMatrixView());
+		objects->drawAsTriangles(debugShader, camera->getMatrixViewProject(), camera->getMatrixView());
 	}
 
 }
@@ -292,9 +302,10 @@ void PagRenderer::prepareOpenGL() {
 	camera = new PagCamera(glm::vec3(0.0, 50.0, 60.0), glm::vec3(0.0, 0.0, 0.0),
 								glm::vec3(0.0, 1.0, 0.0), 60.0f, 0.1f, 200.0f);
 
+	objects = new Pag3DGroup();
+
 	// ------------------ Defino los objetos de revolución -------------------
 	// ---------------------------------- Peon -------------------------------
-
 	std::vector<glm::vec2> points;
 
 	points.push_back(glm::vec2(0.0, 0.0));
@@ -320,11 +331,11 @@ void PagRenderer::prepareOpenGL() {
 	points.push_back(glm::vec2(1.0, 7.5));
 	points.push_back(glm::vec2(0.0, 7.75));
 
-	PagRevolutionObject *pawn = new PagRevolutionObject(points, 2, 30);
+	PagRevolutionObject *pawn = new PagRevolutionObject(points, 2, 20);
 
 	pawn->setMaterial(glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.3, 0.4, 0.3), 0.2f);
 
-	objects.insert3DElement(pawn);
+	objects->insert3DElement(pawn);
 
 	// ---------------------------------------------------------------------------
 	// ---------------------------------- Batidora -------------------------------
@@ -344,7 +355,7 @@ void PagRenderer::prepareOpenGL() {
 	points.push_back(glm::vec2(1.19, 22.1));
 	points.push_back(glm::vec2(0, 22.1));
 
-	PagRevolutionObject *beaterDown = new PagRevolutionObject(points, 2, 30);
+	PagRevolutionObject *beaterDown = new PagRevolutionObject(points, 2, 20);
 
 	beaterDown->setMaterial(glm::vec3(0.9, 0.9, 0.9), glm::vec3(0.8, 0.8, 0.8), 5.5);
 
@@ -361,7 +372,7 @@ void PagRenderer::prepareOpenGL() {
 	points.push_back(glm::vec2(1.0, 22.2));
 	points.push_back(glm::vec2(0.0, 22.0));
 
-	PagRevolutionObject *beaterUp = new PagRevolutionObject(points, 2, 30);
+	PagRevolutionObject *beaterUp = new PagRevolutionObject(points, 2, 20);
 
 	beaterUp->translateModel(glm::vec3(0.0, 21.1, 0.0));
 
@@ -378,7 +389,7 @@ void PagRenderer::prepareOpenGL() {
 	points.push_back(glm::vec2(2.1, 3.7));
 	points.push_back(glm::vec2(0.0, 3.6));
 
-	PagRevolutionObject *beaterHandle = new PagRevolutionObject(points, 2, 30);
+	PagRevolutionObject *beaterHandle = new PagRevolutionObject(points, 2, 20);
 
 	beaterHandle->translateModel(glm::vec3(1.2, 40.2, 0.0));
 
@@ -390,7 +401,7 @@ void PagRenderer::prepareOpenGL() {
 
 	beater->translateModel(glm::vec3(20.0, 0.0, 0.0));
 	
-	objects.insert3DElement(beater);
+	objects->insert3DElement(beater);
 
 	// --------------------------------------------------------------------------
 	// ---------------------------------- Lampara -------------------------------
@@ -414,7 +425,7 @@ void PagRenderer::prepareOpenGL() {
 	points.push_back(glm::vec2(2.4, 8.8));
 	points.push_back(glm::vec2(0.0, 9.1));
 
-	PagRevolutionObject *flexoHead = new PagRevolutionObject(points, 2, 30);
+	PagRevolutionObject *flexoHead = new PagRevolutionObject(points, 2, 20);
 	
 	flexoHead->translateModel(glm::vec3(0.0, 0.0, 0.0));
 
@@ -430,7 +441,7 @@ void PagRenderer::prepareOpenGL() {
 	points.push_back(glm::vec2(0.1, 7.5));
 	points.push_back(glm::vec2(0.0, 7.5));
 
-	PagRevolutionObject *bulb = new PagRevolutionObject(points, 2, 30);
+	PagRevolutionObject *bulb = new PagRevolutionObject(points, 2, 20);
 
 	bulb->translateModel(glm::vec3(0.0, 8.0, 0.0));
 	bulb->rotateModel(glm::vec3(1.0, 0.0, 0.0), 180);
@@ -442,16 +453,16 @@ void PagRenderer::prepareOpenGL() {
 	flexo->translateModel(glm::vec3(-20.0, 20.0, 0.0));
 	flexo->rotateModel(glm::vec3(1.0, 1.0, 0.0), 90);
 
-	objects.insert3DElement(flexo);
+	objects->insert3DElement(flexo);
 
 	// --------------------------------------------------------------------------
 	// ---------------------------------- Mesa ----------------------------------
 
-	PagPlane *board = new PagPlane(100.0, 80.0, 20.0, 6, 6);
+	PagPlane *board = new PagPlane(100.0, 80.0, 10.0, 8, 8);
 	board->translateModel(glm::vec3(-50.0, 0.0, -40.0));
 	board->setMaterial(glm::vec3(0.5, 0.2, 0.0), glm::vec3(0.2, 0.1, 0.0), 10.0);
 
-	objects.insert3DElement(board);
+	objects->insert3DElement(board);
 
 	// --------------------------------------------------------------------------
 	// --------------------------------------------------------------------------
@@ -477,13 +488,13 @@ void PagRenderer::prepareOpenGL() {
 	PagPointLight *point = new PagPointLight(glm::vec3(0.35, 0.3, 0.3), glm::vec3(0.2, 0.1, 0.1), 
 		glm::vec3(0.2, 0.2, 0.2), glm::vec3(30.0, 15.0, -30.0), 1.0f, 0.0f, 0.0f, PAG_POINT);
 
-	PagDirectionalLight *directional = new PagDirectionalLight(glm::vec3(0.1, 0.1, 0.1), glm::vec3(0.3, 0.3, 0.3), 
-		glm::vec3(0.2, 0.2, 0.2), glm::vec3(-10.0, -5.0, 10.0), 1.0f, 0.0f, 0.0f, PAG_DIRECTIONAL);
-
 	PagSpotLight *spot = new PagSpotLight(glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.1, 0.1, 0.3),
-		glm::vec3(0.0, -1.0, 0.0), glm::vec3(-5.0, 1.0, 0.0), 0.0f, 60.0f, 1.0f, 0.0f, 0.0f, PAG_SPOT);
+		glm::vec3(0.0, -1.0, 0.0), glm::vec3(-5.0, 1.0, 0.0), 0.0f, 60.0f, 0.7f, 0.4f, 0.0f, PAG_SPOT);
 
-	//light.push_back(new PagLightSource(point));
+	PagDirectionalLight *directional = new PagDirectionalLight(glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.3, 0.3, 0.3), 
+		glm::vec3(0.3, 0.3, 0.2), glm::vec3(-10.0, -5.0, 10.0), 0.3f, 0.5f, 0.0f, PAG_DIRECTIONAL);
+
 	//light.push_back(new PagLightSource(directional));
-	light.push_back(new PagLightSource(spot));
+	light.push_back(new PagLightSource(point));
+	//light.push_back(new PagLightSource(spot));
 };

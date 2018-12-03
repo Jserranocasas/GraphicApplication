@@ -89,9 +89,9 @@ void PagCamera::executeOrbit(double xpos, double cursorX, double ypos, double cu
 	glm::mat4x4 rotate;
 
 	if (xpos < cursorX) {
-		rotate = glm::rotate(glm::mat4(1.0f), 0.01f, v);
+		rotate = glm::rotate(glm::mat4(1.0f), 0.05f, v);
 	} else {
-		rotate = glm::rotate(glm::mat4(1.0f), -0.01f, v);
+		rotate = glm::rotate(glm::mat4(1.0f), -0.05f, v);
 	}
 
 	glm::mat4x4 M = translate * rotate * translateOrigin;
@@ -107,10 +107,10 @@ void PagCamera::executePan(double xpos, double cursorX, double ypos, double curs
 	glm::mat4x4 rotate;
 
 	if (xpos < cursorX) {
-		rotate = glm::rotate(glm::mat4(1.0f), 0.005f, v);
+		rotate = glm::rotate(glm::mat4(1.0f), 0.05f, v);
 	}
 	else {
-		rotate = glm::rotate(glm::mat4(1.0f), -0.005f, v);
+		rotate = glm::rotate(glm::mat4(1.0f), -0.05f, v);
 	}
 
 	glm::mat4x4 M = translate * rotate * translateOrigin;

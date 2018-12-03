@@ -57,7 +57,7 @@ private:
 	PagCamera *camera;
 
 	// - Objetos de revolución de la escena
-	Pag3DGroup objects; 
+	Pag3DGroup *objects; 
 
 	// - Shader program que se usa para dibujar la geometría
 	PagShaderProgram *pointShader;

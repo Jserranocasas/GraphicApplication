@@ -18,7 +18,7 @@ public:
 	~PagMaterial();
 
 	void setMaterial(glm::vec3 _kd, glm::vec3 _ks, float _shi);
-	void sendUniform(PagShaderProgram shader);
+	void sendUniform(PagShaderProgram *shader);
 private:
 	glm::vec3 kd, ks;	//Constantes difusa y especular
 	float shininess;	//Propiedad de brillo para el modelo de Phong

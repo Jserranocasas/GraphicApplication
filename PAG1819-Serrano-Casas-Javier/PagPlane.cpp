@@ -17,6 +17,7 @@ PagPlane::PagPlane(float width, float height, float depth, int tilingH, int tili
 
 // - Destructor de la clase PagPlane
 PagPlane::~PagPlane(){
+	delete []sides;
 }
 
 // - Dibuja los 6 lados del tablero como triangulos sombreados
@@ -103,12 +104,30 @@ void PagPlane::addPointsLevel(float width, float height, float depth, int tiling
  * @param tilingV int. Número de divisiones verticales del plano
  */
 void PagPlane::addTexturesCoordenates(float width, float height, float depth, int tilingH, int tilingV) {
-	for (int i = 0; i < 6; i++) {
-		sides[i]->addTexture(glm::vec2(0.0, 0.0));
-		sides[i]->addTexture(glm::vec2(0.0, 1.0));
-		sides[i]->addTexture(glm::vec2(1.0, 0.0));
-		sides[i]->addTexture(glm::vec2(1.0, 1.0));
+	for (int s = 0; s < 2; s++) {
+		for (int i = 0; i <= tilingV; i++) { //Para la cara superior e inferior del tablero
+			for (unsigned int j = 0; j <= tilingH; j++) {
+				sides[s]->addTexture(glm::vec2(j / (1.0 * tilingH), i / (1.0 * tilingV)));
+			}
+		}
 	}
+	
+	for (int s = 2; s < 4; s++) { //Para la cara cercana y lejana del tablero
+		for (int i = 0; i < 2; i++) {
+			for (unsigned int j = 0; j <= tilingH; j++) {
+				sides[s]->addTexture(glm::vec2(j / (1.0 * tilingH), i));
+			}
+		}
+	}
+
+	for (int s = 4; s < 6; s++) { //Para la cara izquierda y derecha del tablero
+		for (unsigned int i = 0; i < 2; i++) {
+			for (int j = 0; j <= tilingV; j++) {
+				sides[s]->addTexture(glm::vec2(j / (1.0 * tilingH), i));
+			}
+		}
+	}
+
 }
 
 /**
@@ -120,12 +139,41 @@ void PagPlane::addTexturesCoordenates(float width, float height, float depth, in
  * @param tilingV int. Número de divisiones verticales del plano
  */
 void PagPlane::addTangentsCoordenates(float width, float height, float depth, int tilingH, int tilingV) {
-	sides[0]->addTangent(glm::vec3(1.0, 0.0, 0.0));  //A
-	sides[1]->addTangent(glm::vec3(0.0, 0.0, -1.0)); //B
-	sides[2]->addTangent(glm::vec3(0.0, 0.0, 1.0));  //C
-	sides[3]->addTangent(glm::vec3(-1.0, 0.0, 0.0)); //D
-	sides[4]->addTangent(glm::vec3(0.0, 0.0, 1.0));  //E
-	sides[5]->addTangent(glm::vec3(0.0, 0.0, -1.0)); //F
+	for (int i = 0; i <= tilingV; i++) { //Para la cara superior del tablero
+		for (unsigned int j = 0; j <= tilingH; j++) {
+			sides[0]->addTangent(glm::vec3(0.0, 0.0, -1.0));
+		}
+	}
+	
+	for (int i = 0; i <= tilingV; i++) { //Para la cara inferior del tablero
+		for (unsigned int j = 0; j <= tilingH; j++) {
+			sides[1]->addTangent(glm::vec3(0.0, 0.0, 1.0));
+		}
+	}
+
+	for (int i = 0; i < 2; i++) {
+		for (unsigned int j = 0; j <= tilingH; j++) { //Para la cara lejana del tablero
+			sides[2]->addTangent(glm::vec3(-1.0, 0.0, 0.0));
+		}
+	}
+	
+	for (int i = 0; i < 2; i++) {
+		for (unsigned int j = 0; j <= tilingH; j++) { //Para la cara cercana del tablero
+			sides[3]->addTangent(glm::vec3(1.0, 0.0, 0.0));
+		}
+	}
+
+	for (unsigned int i = 0; i < 2; i++) {  //Para la cara izquierda del tablero
+		for (int j = 0; j <= tilingV; j++) {
+			sides[4]->addTangent(glm::vec3(0.0, 0.0, 1.0));
+		}
+	}
+
+	for (unsigned int i = 0; i < 2; i++) {  //Para la cara derecha del tablero
+		for (int j = 0; j <= tilingV; j++) {
+			sides[5]->addTangent(glm::vec3(0.0, 0.0, -1.0));
+		}
+	}
 }
 
 // - Define la topología del objeto para modo alambre, puntos y triángulos
