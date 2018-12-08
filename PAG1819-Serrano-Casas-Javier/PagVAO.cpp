@@ -66,6 +66,36 @@ PagVAO::PagVAO() : vao(0) {
 	glGenBuffers(3, ibo);
 }
 
+PagVAO::PagVAO(const PagVAO &orig) {
+	vao = orig.vao;
+	vbo[0] = orig.vbo[0];
+	vbo[1] = orig.vbo[1];
+	vbo[2] = orig.vbo[2];
+	posNorm = orig.posNorm;
+	textures = orig.textures;
+	tangents = orig.tangents;
+	indexesCloud = orig.indexesCloud;
+	indexesTMesh = orig.indexesTMesh;
+	indexesWireframe = orig.indexesWireframe;
+}
+
+PagVAO& PagVAO::operator=(const PagVAO &orig) {
+	if (this != &orig) {
+		vao = orig.vao;
+		vbo[0] = orig.vbo[0];
+		vbo[1] = orig.vbo[1];
+		vbo[2] = orig.vbo[2];
+		posNorm = orig.posNorm;
+		textures = orig.textures;
+		tangents = orig.tangents;
+		indexesCloud = orig.indexesCloud;
+		indexesTMesh = orig.indexesTMesh;
+		indexesWireframe = orig.indexesWireframe;
+	}
+
+	return *this;
+}
+
 PagVAO::~PagVAO() {}
 
 /* --------------------- Métodos getter ---------------------*/

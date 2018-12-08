@@ -72,12 +72,12 @@ void PagPlane::addPointsLevel(float width, float height, float depth, int tiling
 			sides[level]->addPosNorm(aux); //Para las caras superior e inferior
 
 			if (i == 0) { //Para la cara lejana del tablero
-				aux.normal = glm::vec3(0.0, 0.0, -1.0);
+				aux.normal = glm::vec3(0.0, 0.0, 1.0);
 				sides[2]->addPosNorm(aux);
 			}
 			 
 			if (i == tilingV) { //Para la cara cercana del tablero
-				aux.normal = glm::vec3(0.0, 0.0, 1.0);
+				aux.normal = glm::vec3(0.0, 0.0, -1.0);
 				sides[3]->addPosNorm(aux);
 			}
 

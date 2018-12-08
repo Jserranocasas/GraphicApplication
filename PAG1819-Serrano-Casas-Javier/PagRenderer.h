@@ -8,6 +8,7 @@
 #include "PagPointLight.h"
 #include "PagStructures.h"
 #include "PagLightSource.h"
+#include "PagAmbientLight.h"
 #include "PagEnumerations.h"
 #include "PagShaderProgram.h"
 #include "PagRevolutionObject.h"

@@ -38,6 +38,7 @@ private:
 public:
 	PagRevolutionObject(std::vector<glm::vec2> points, 
 		unsigned int subdivisions, unsigned int slices);
+	PagRevolutionObject(const PagRevolutionObject &orig);
 	PagRevolutionObject& operator=(const PagRevolutionObject &orig);
 	~PagRevolutionObject();
 

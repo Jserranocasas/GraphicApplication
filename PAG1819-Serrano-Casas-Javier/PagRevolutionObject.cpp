@@ -40,6 +40,17 @@ PagRevolutionObject::PagRevolutionObject(std::vector<glm::vec2> points,
 
 }
 
+PagRevolutionObject::PagRevolutionObject(const PagRevolutionObject &orig) {
+	delete body;
+	delete top;
+	delete bottom;
+
+	profile = orig.profile;
+	top = orig.top;
+	bottom = orig.bottom;
+	body = orig.body;
+}
+
 // - Operador de asignación de la clase PagSubdivision.
 PagRevolutionObject& PagRevolutionObject::operator=(const PagRevolutionObject &orig) {
 	delete body;

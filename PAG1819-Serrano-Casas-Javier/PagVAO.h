@@ -18,6 +18,8 @@
 class PagVAO {
 public:
 	PagVAO();
+	PagVAO(const PagVAO &orig);
+	PagVAO& operator=(const PagVAO &orig);
 	~PagVAO();
 	std::vector<GLuint> getIndexesWireframe() const;
 	std::vector<GLuint> getIndexesTMesh() const;
