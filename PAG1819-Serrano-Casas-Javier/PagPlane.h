@@ -5,7 +5,7 @@
 
 /*
  * @file	PagPlane.h
- * @brief	Clase PagPlane 
+ * @brief	Clase PagPlane que representa objetos 3D planos
  * @author	Javier Serrano Casas
  * @date	26-11-2018
  */
@@ -18,6 +18,7 @@ public:
 	void drawAsTriangles(PagShaderProgram *shader, glm::mat4 vp, glm::mat4 v);
 	void drawAsPoints(PagShaderProgram *shader, glm::mat4 viewProject);
 	void drawAsLines(PagShaderProgram *shader, glm::mat4 viewProject);
+	void drawAsDebug(PagShaderProgram *shader, glm::mat4 viewProject);
 
 private:
 	PagVAO *sides[6];

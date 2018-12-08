@@ -8,7 +8,8 @@ PagPointLight::PagPointLight(glm::vec3 _Id, glm::vec3 _Is, glm::vec3 _position, 
 PagPointLight::~PagPointLight() {
 }
 
-void PagPointLight::execute(PagShaderProgram& ads, PagCamera camera) {
+// - Aplica los parámetros de la fuente luminosa enviando los uniform correspondientes
+void PagPointLight::apply(PagShaderProgram& ads, PagCamera camera) {
 	glm::vec3 positionView = glm::vec3(camera.getMatrixView() * glm::vec4(position, 1.0));
 	ads.setUniform("lightPosition", positionView);
 	ads.setUniform("Id", Id);

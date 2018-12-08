@@ -8,8 +8,8 @@ PagAmbientLight::~PagAmbientLight()
 {
 }
 
-
-void PagAmbientLight::execute(PagShaderProgram& ads, PagCamera camera) {
+// - Aplica los parámetros de la fuente luminosa enviando los uniform correspondientes
+void PagAmbientLight::apply(PagShaderProgram& ads, PagCamera camera) {
 	ads.setUniform("Ia", Ia);
 
 	// Estas variables no las utilizare pero necesito pasarlas por las subrutinas

@@ -17,7 +17,9 @@ PagPlane::PagPlane(float width, float height, float depth, int tilingH, int tili
 
 // - Destructor de la clase PagPlane
 PagPlane::~PagPlane(){
-	delete []sides;
+	for (int i = 0; i < 6; i++) {
+		delete sides[i];
+	}
 }
 
 // - Dibuja los 6 lados del tablero como triangulos sombreados
@@ -38,6 +40,13 @@ void PagPlane::drawAsPoints(PagShaderProgram *shader, glm::mat4 viewProject) {
 void PagPlane::drawAsLines(PagShaderProgram *shader, glm::mat4 viewProject) {
 	for (int i = 0; i < 6; i++) {
 		sides[i]->drawLines();
+	}
+}
+
+// - Dibuja los 6 lados del tablero en modo alambre
+void PagPlane::drawAsDebug(PagShaderProgram *shader, glm::mat4 viewProject) {
+	for (int i = 0; i < 6; i++) {
+		sides[i]->drawTriangles(PAG_BODY);
 	}
 }
 
@@ -106,7 +115,7 @@ void PagPlane::addPointsLevel(float width, float height, float depth, int tiling
 void PagPlane::addTexturesCoordenates(float width, float height, float depth, int tilingH, int tilingV) {
 	for (int s = 0; s < 2; s++) {
 		for (int i = 0; i <= tilingV; i++) { //Para la cara superior e inferior del tablero
-			for (unsigned int j = 0; j <= tilingH; j++) {
+			for (int j = 0; j <= tilingH; j++) {
 				sides[s]->addTexture(glm::vec2(j / (1.0 * tilingH), i / (1.0 * tilingV)));
 			}
 		}
@@ -114,7 +123,7 @@ void PagPlane::addTexturesCoordenates(float width, float height, float depth, in
 	
 	for (int s = 2; s < 4; s++) { //Para la cara cercana y lejana del tablero
 		for (int i = 0; i < 2; i++) {
-			for (unsigned int j = 0; j <= tilingH; j++) {
+			for (int j = 0; j <= tilingH; j++) {
 				sides[s]->addTexture(glm::vec2(j / (1.0 * tilingH), i));
 			}
 		}
@@ -140,25 +149,25 @@ void PagPlane::addTexturesCoordenates(float width, float height, float depth, in
  */
 void PagPlane::addTangentsCoordenates(float width, float height, float depth, int tilingH, int tilingV) {
 	for (int i = 0; i <= tilingV; i++) { //Para la cara superior del tablero
-		for (unsigned int j = 0; j <= tilingH; j++) {
+		for (int j = 0; j <= tilingH; j++) {
 			sides[0]->addTangent(glm::vec3(0.0, 0.0, -1.0));
 		}
 	}
 	
 	for (int i = 0; i <= tilingV; i++) { //Para la cara inferior del tablero
-		for (unsigned int j = 0; j <= tilingH; j++) {
+		for (int j = 0; j <= tilingH; j++) {
 			sides[1]->addTangent(glm::vec3(0.0, 0.0, 1.0));
 		}
 	}
 
 	for (int i = 0; i < 2; i++) {
-		for (unsigned int j = 0; j <= tilingH; j++) { //Para la cara lejana del tablero
+		for (int j = 0; j <= tilingH; j++) { //Para la cara lejana del tablero
 			sides[2]->addTangent(glm::vec3(-1.0, 0.0, 0.0));
 		}
 	}
 	
 	for (int i = 0; i < 2; i++) {
-		for (unsigned int j = 0; j <= tilingH; j++) { //Para la cara cercana del tablero
+		for (int j = 0; j <= tilingH; j++) { //Para la cara cercana del tablero
 			sides[3]->addTangent(glm::vec3(1.0, 0.0, 0.0));
 		}
 	}
@@ -203,8 +212,8 @@ void PagPlane::definePointCloud(int tilingH, int tilingV) {
 void PagPlane::defineMeshTriangles(int tilingH, int tilingV) {
 	
 	// Cara superior del plano
-	for (unsigned int j = 0; j < tilingV; j++) {
-		for (unsigned int m = 0; m < tilingH; m++) {
+	for (int j = 0; j < tilingV; j++) {
+		for (int m = 0; m < tilingH; m++) {
 			sides[0]->addIndexTMesh(j * (tilingH + 1) + m);
 			sides[0]->addIndexTMesh(j * (tilingH + 1) + m + (tilingH + 1) + 1);
 			sides[0]->addIndexTMesh(j * (tilingH + 1) + m + 1);
@@ -218,8 +227,8 @@ void PagPlane::defineMeshTriangles(int tilingH, int tilingV) {
 	}
 	
 	// Cara inferior del plano
-	for (unsigned int j = 0; j < tilingV; j++) {
-		for (unsigned int m = 0; m < tilingH; m++) {
+	for (int j = 0; j < tilingV; j++) {
+		for (int m = 0; m < tilingH; m++) {
 			sides[1]->addIndexTMesh(j * (tilingH + 1) + m);
 			sides[1]->addIndexTMesh(j * (tilingH + 1) + m + 1);
 			sides[1]->addIndexTMesh(j * (tilingH + 1) + m + (tilingH + 1) + 1);
@@ -233,7 +242,7 @@ void PagPlane::defineMeshTriangles(int tilingH, int tilingV) {
 	}
 
 	// Cara lejana del plano
-	for (unsigned int m = 0; m < tilingH; m++) {
+	for (int m = 0; m < tilingH; m++) {
 		sides[2]->addIndexTMesh(m);
 		sides[2]->addIndexTMesh(m + (tilingH + 1) + 1);
 		sides[2]->addIndexTMesh(m + 1);
@@ -246,7 +255,7 @@ void PagPlane::defineMeshTriangles(int tilingH, int tilingV) {
 	}
 
 	// Cara cercana del plano
-	for (unsigned int m = 0; m < tilingH; m++) {
+	for (int m = 0; m < tilingH; m++) {
 		sides[3]->addIndexTMesh(m);
 		sides[3]->addIndexTMesh(m + (tilingH + 1) + 1);
 		sides[3]->addIndexTMesh(m + 1);
@@ -259,7 +268,7 @@ void PagPlane::defineMeshTriangles(int tilingH, int tilingV) {
 	}
 
 	// Cara lateral izquierda del plano
-	for (unsigned int m = 0; m < tilingV; m++) {
+	for (int m = 0; m < tilingV; m++) {
 		sides[4]->addIndexTMesh(m);
 		sides[4]->addIndexTMesh(m + (tilingV + 1));
 		sides[4]->addIndexTMesh(m + 1);
@@ -272,7 +281,7 @@ void PagPlane::defineMeshTriangles(int tilingH, int tilingV) {
 	}
 	
 	// Cara lateral derecha del plano
-	for (unsigned int m = 0; m < tilingV; m++) {
+	for (int m = 0; m < tilingV; m++) {
 		sides[5]->addIndexTMesh(m);
 		sides[5]->addIndexTMesh(m + 1);
 		sides[5]->addIndexTMesh(m + (tilingV + 1) + 1);
@@ -289,8 +298,8 @@ void PagPlane::defineMeshTriangles(int tilingH, int tilingV) {
 // - Define la topologia para el modo de lineas
 void PagPlane::defineWireFrame(int tilingH, int tilingV) {
 	for (int i = 0; i < 2; i++) {
-		for (unsigned int j = 0; j <= tilingV; j++) {
-			for (unsigned int m = 0; m < tilingH; m++) {
+		for (int j = 0; j <= tilingV; j++) {
+			for (int m = 0; m < tilingH; m++) {
 				sides[i]->addIndexWireFrame(j * (tilingH + 1) + m);
 				sides[i]->addIndexWireFrame(j * (tilingH + 1) + m + 1);
 				sides[i]->addIndexWireFrame(0xFFFFFFFF);
@@ -298,7 +307,7 @@ void PagPlane::defineWireFrame(int tilingH, int tilingV) {
 		}
 
 		for (int j = 0; j < tilingV; j++) {
-			for (unsigned int m = 0; m <= tilingH; m++) {
+			for (int m = 0; m <= tilingH; m++) {
 				sides[i]->addIndexWireFrame(j * (tilingH + 1) + m);
 				sides[i]->addIndexWireFrame(j * (tilingH + 1) + (tilingH + 1) + m);
 				sides[i]->addIndexWireFrame(0xFFFFFFFF);
@@ -308,14 +317,14 @@ void PagPlane::defineWireFrame(int tilingH, int tilingV) {
 
 	for (int i = 2; i < 4; i++) {
 		for (unsigned int j = 0; j < 2; j++) {
-			for (unsigned int m = 0; m < tilingH; m++) {
+			for (int m = 0; m < tilingH; m++) {
 				sides[i]->addIndexWireFrame(j * (tilingH + 1) + m);
 				sides[i]->addIndexWireFrame(j * (tilingH + 1) + m + 1);
 				sides[i]->addIndexWireFrame(0xFFFFFFFF);
 			}
 		}
 
-		for (unsigned int m = 0; m <= tilingH; m++) {
+		for (int m = 0; m <= tilingH; m++) {
 			sides[i]->addIndexWireFrame(m);
 			sides[i]->addIndexWireFrame((tilingH + 1) + m);
 			sides[i]->addIndexWireFrame(0xFFFFFFFF);
@@ -324,14 +333,14 @@ void PagPlane::defineWireFrame(int tilingH, int tilingV) {
 
 	for (int i = 4; i < 6; i++) {
 		for (unsigned int j = 0; j < 2; j++) {
-			for (unsigned int m = 0; m < tilingV; m++) {
+			for (int m = 0; m < tilingV; m++) {
 				sides[i]->addIndexWireFrame(j * (tilingV + 1) + m);
 				sides[i]->addIndexWireFrame(j * (tilingV + 1) + m + 1);
 				sides[i]->addIndexWireFrame(0xFFFFFFFF);
 			}
 		}
 
-		for (unsigned int m = 0; m <= tilingV; m++) {
+		for ( int m = 0; m <= tilingV; m++) {
 			sides[i]->addIndexWireFrame(m);
 			sides[i]->addIndexWireFrame((tilingV + 1) + m);
 			sides[i]->addIndexWireFrame(0xFFFFFFFF);

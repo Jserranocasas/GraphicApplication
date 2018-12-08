@@ -1,6 +1,6 @@
 #include "PagDirectionalLight.h"
 
-PagDirectionalLight::PagDirectionalLight(glm::vec3 _Ia, glm::vec3 _Id, glm::vec3 _Is,
+PagDirectionalLight::PagDirectionalLight(glm::vec3 _Id, glm::vec3 _Is,
 	glm::vec3 _direction, float _c1, float _c2, float _c3)
 	: Id(_Id), Is(_Is), direction(_direction), c1(_c1), c2(_c2), c3(_c3) {
 }
@@ -8,7 +8,8 @@ PagDirectionalLight::PagDirectionalLight(glm::vec3 _Ia, glm::vec3 _Id, glm::vec3
 PagDirectionalLight::~PagDirectionalLight() {
 }
 
-void PagDirectionalLight::execute(PagShaderProgram& ads, PagCamera camera) {
+// - Aplica los parámetros de la fuente luminosa enviando los uniform correspondientes
+void PagDirectionalLight::apply(PagShaderProgram& ads, PagCamera camera) {
 	glm::vec3 directionView = glm::vec3(camera.getMatrixView() * glm::vec4(direction, 0.0));
 	ads.setUniform("lightDirection", glm::normalize(directionView));
 	ads.setUniform("Id", Id);

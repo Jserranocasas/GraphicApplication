@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Pag3DElement.cpp" />
     <ClCompile Include="Pag3DGroup.cpp" />
@@ -130,6 +131,8 @@
     <ClCompile Include="PagCamera.cpp" />
     <ClCompile Include="PagDirectionalLight.cpp" />
     <ClCompile Include="PagLightSource.cpp" />
+    <ClCompile Include="PagListMaterials.cpp" />
+    <ClCompile Include="PagListTextures.cpp" />
     <ClCompile Include="PagMaterial.cpp" />
     <ClCompile Include="PagPlane.cpp" />
     <ClCompile Include="PagPointLight.cpp" />
@@ -138,9 +141,11 @@
     <ClCompile Include="PagShaderProgram.cpp" />
     <ClCompile Include="PagSpotLight.cpp" />
     <ClCompile Include="PagSubdivisionProfile.cpp" />
+    <ClCompile Include="PagTexture.cpp" />
     <ClCompile Include="PagVAO.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="lodepng.h" />
     <ClInclude Include="Pag3DElement.h" />
     <ClInclude Include="Pag3DGroup.h" />
     <ClInclude Include="PagAmbientLight.h" />
@@ -148,6 +153,8 @@
     <ClInclude Include="PagDirectionalLight.h" />
     <ClInclude Include="PagEnumerations.h" />
     <ClInclude Include="PagLightSource.h" />
+    <ClInclude Include="PagListMaterials.h" />
+    <ClInclude Include="PagListTextures.h" />
     <ClInclude Include="PagMaterial.h" />
     <ClInclude Include="PagPlane.h" />
     <ClInclude Include="PagPointLight.h" />
@@ -158,6 +165,7 @@
     <ClInclude Include="PagLightApplication.h" />
     <ClInclude Include="PagStructures.h" />
     <ClInclude Include="PagSubdivisionProfile.h" />
+    <ClInclude Include="PagTexture.h" />
     <ClInclude Include="PagVAO.h" />
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,8 @@ PagSpotLight::PagSpotLight(glm::vec3 _Id, glm::vec3 _Is, glm::vec3 _direction, g
 PagSpotLight::~PagSpotLight() {
 }
 
-void PagSpotLight::execute(PagShaderProgram& ads, PagCamera camera) {
+// - Aplica los parámetros de la fuente luminosa enviando los uniform correspondientes
+void PagSpotLight::apply(PagShaderProgram& ads, PagCamera camera) {
 	glm::vec3 positionView = glm::vec3(camera.getMatrixView() * glm::vec4(position, 1.0));
 	glm::vec3 directionView = glm::vec3(camera.getMatrixView() * glm::vec4(direction, 0.0));
 

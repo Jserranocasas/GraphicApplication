@@ -14,18 +14,22 @@ Pag3DGroup& Pag3DGroup::operator=(const Pag3DGroup& orig) {
 Pag3DGroup::~Pag3DGroup() {
 }
 
+// - Inserta al vector un objeto Pag3DElement de tipo PagPlane
 void Pag3DGroup::insert3DElement(PagPlane *element) {
 	elements.push_back(element);
 }
 
+// - Inserta al vector un objeto Pag3DElement de tipo Pag3DGroup
 void Pag3DGroup::insert3DElement(Pag3DGroup *element) {
 	elements.push_back(element);
 }
 
+// - Inserta al vector un objeto Pag3DElement de tipo PagRevolutionObject
 void Pag3DGroup::insert3DElement(PagRevolutionObject *element) {
 	elements.push_back(element);
 }
 
+// - Método para dibujar el grupo 3D de manera recursiva en modo triangulos sombreados
 void Pag3DGroup::drawAsTriangles(PagShaderProgram *shader, glm::mat4 vp, glm::mat4 v) {
 	glm::mat4 modelViewProject;
 	glm::mat4 modelView;
@@ -43,6 +47,7 @@ void Pag3DGroup::drawAsTriangles(PagShaderProgram *shader, glm::mat4 vp, glm::ma
 	}
 }
 
+// - Método para dibujar el grupo 3D de manera recursiva en modo nube de puntos
 void Pag3DGroup::drawAsPoints(PagShaderProgram *shader, glm::mat4 viewProject) {
 	glm::mat4 modelViewProject;
 
@@ -56,7 +61,21 @@ void Pag3DGroup::drawAsPoints(PagShaderProgram *shader, glm::mat4 viewProject) {
 	}
 }
 
-// - 
+// - Método para dibujar el grupo 3D de manera recursiva en modo debug
+void Pag3DGroup::drawAsDebug(PagShaderProgram *shader, glm::mat4 viewProject) {
+	glm::mat4 modelViewProject;
+
+	for (unsigned int i = 0; i < elements.size(); i++) {
+		modelViewProject = viewProject * elements[i]->getModelMatrix();
+
+		// - Asignamos la matriz de vision, modelado y proyeccion de tipo uniform del shader program.
+		shader->setUniform("mModelViewProj", modelViewProject);
+
+		elements[i]->drawAsDebug(shader, modelViewProject);
+	}
+}
+
+// - Método para dibujar el grupo 3D de manera recursiva en modo lineas
 void Pag3DGroup::drawAsLines(PagShaderProgram *shader, glm::mat4 viewProject) {
 	glm::mat4 modelViewProject;
 

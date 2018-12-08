@@ -6,6 +6,7 @@
 #include "PagPlane.h"
 #include "PagRenderer.h"
 #include "Pag3DGroup.h"
+#include "PagListMaterials.h"
 
 // - Inicializa el singleton.
 PagRenderer * PagRenderer::instance = NULL;
@@ -122,8 +123,8 @@ void PagRenderer::refreshCallback() {
 				glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &adsId4);
 			}
 
-			// - Dibujar la escena completa
-			light[i]->execute(*ADSShader, *camera);
+			// - Asignamos los parámetros de iluminacion de tipo uniform del shader program. 
+			light[i]->apply(*ADSShader, *camera);
 
 			// - Dibujo el objeto como triángulos sombreados.
 			objects->drawAsTriangles(ADSShader, camera->getMatrixViewProject(), camera->getMatrixView());
@@ -142,7 +143,7 @@ void PagRenderer::refreshCallback() {
 		debugShader->setUniform("debugOption", debugOption);
 
 		// - Dibujo el objeto como debug.
-		objects->drawAsTriangles(debugShader, camera->getMatrixViewProject(), camera->getMatrixView());
+		objects->drawAsDebug(debugShader, camera->getMatrixViewProject());
 	}
 
 }
@@ -309,6 +310,19 @@ void PagRenderer::prepareOpenGL() {
 
 	objects = new Pag3DGroup();
 
+	// ------------------------ Defino los materiales ------------------------
+
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.5, 0.2, 0.6), glm::vec3(0.4, 0.4, 0.5), 30.0f)); // Morado Marmol	- 0
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.8, 0.2, 0.2), glm::vec3(0.6, 0.3, 0.3), 30.0f)); // Rojo Marmol		- 1
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.5, 0.5, 0.2), glm::vec3(0.5, 0.5, 0.3), 30.0f)); // Amarillo Marmol	- 2
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.3, 0.4, 0.3), 30.0f)); // Negro Marmol	- 3
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.9, 0.9, 0.9), glm::vec3(0.8, 0.8, 0.8), 5.5));   // Plateado Metal	- 4
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.2, 0.2, 0.8), glm::vec3(0.2, 0.2, 0.4), 85.0));  // Azul Plastico	- 5
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0), 1.0));   // Blanco Cristal	- 6
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.2, 0.8, 0.2), glm::vec3(0.2, 0.8, 0.5), 35.0));  // Verde Metal		- 7
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.5, 0.2, 0.0), glm::vec3(0.2, 0.1, 0.0), 10.0));	 // Marron Madera	- 8
+
+
 	// ------------------ Defino los objetos de revolución -------------------
 	// ---------------------------------- Peon -------------------------------
 	std::vector<glm::vec2> points;
@@ -341,13 +355,13 @@ void PagRenderer::prepareOpenGL() {
 	PagRevolutionObject *pawn3 = new PagRevolutionObject(*pawn);
 	PagRevolutionObject *pawn4 = new PagRevolutionObject(*pawn);
 
-	pawn->setMaterial(glm::vec3(0.5, 0.2, 0.6), glm::vec3(0.4, 0.4, 0.5), 30.0f);
+	pawn->setMaterial(PagListMaterials::getInstance()->getMaterial(0));
 	pawn->translateModel(glm::vec3(5.0, 0.0, 5.0));
-	pawn2->setMaterial(glm::vec3(0.8, 0.2, 0.2), glm::vec3(0.6, 0.3, 0.3), 30.0f);
+	pawn2->setMaterial(PagListMaterials::getInstance()->getMaterial(1));
 	pawn2->translateModel(glm::vec3(-5.0, 0.0, 5.0));
-	pawn3->setMaterial(glm::vec3(0.5, 0.5, 0.2), glm::vec3(0.5, 0.5, 0.3), 30.0f);
+	pawn3->setMaterial(PagListMaterials::getInstance()->getMaterial(2));
 	pawn3->translateModel(glm::vec3(5.0, 0.0, -5.0));
-	pawn4->setMaterial(glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.3, 0.4, 0.3), 30.0f);
+	pawn4->setMaterial(PagListMaterials::getInstance()->getMaterial(3));
 	pawn4->translateModel(glm::vec3(-5.0, 0.0, -5.0));
 
 	objects->insert3DElement(pawn);
@@ -375,7 +389,7 @@ void PagRenderer::prepareOpenGL() {
 
 	PagRevolutionObject *beaterDown = new PagRevolutionObject(points, 2, 20);
 
-	beaterDown->setMaterial(glm::vec3(0.9, 0.9, 0.9), glm::vec3(0.8, 0.8, 0.8), 5.5);
+	beaterDown->setMaterial(PagListMaterials::getInstance()->getMaterial(4));
 
 	points.clear();
 	points.push_back(glm::vec2(0.0, 0.0));
@@ -394,7 +408,7 @@ void PagRenderer::prepareOpenGL() {
 
 	beaterUp->translateModel(glm::vec3(0.0, 21.1, 0.0));
 
-	beaterUp->setMaterial(glm::vec3(0.5, 0.5, 1.0), glm::vec3(0.2, 0.2, 0.3), 105.0);
+	beaterUp->setMaterial(PagListMaterials::getInstance()->getMaterial(5));
 
 	points.clear();
 	points.push_back(glm::vec2(0.0, 0.0));
@@ -411,7 +425,20 @@ void PagRenderer::prepareOpenGL() {
 
 	beaterHandle->translateModel(glm::vec3(1.2, 40.2, 0.0));
 
-	beaterHandle->setMaterial(glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0), 90.0);
+	beaterHandle->setMaterial(PagListMaterials::getInstance()->getMaterial(5));
+
+	points.clear();
+	points.push_back(glm::vec2(0.0, 0.0));
+	points.push_back(glm::vec2(1.99, 0.1));
+	points.push_back(glm::vec2(2.0, 0.1));
+	points.push_back(glm::vec2(0.5, 0.5));
+	points.push_back(glm::vec2(0.5, 2.5));
+	points.push_back(glm::vec2(0.5, 5.0));
+	points.push_back(glm::vec2(0.5, 10.1));
+
+	PagRevolutionObject *crusher = new PagRevolutionObject(points, 2, 20);
+
+	crusher->setMaterial(PagListMaterials::getInstance()->getMaterial(4));
 
 	beater->insert3DElement(beaterDown);
 	beater->insert3DElement(beaterUp);
@@ -419,7 +446,6 @@ void PagRenderer::prepareOpenGL() {
 
 	beater->translateModel(glm::vec3(-30.0, 3.5, -30.0));
 	beater->rotateModel(glm::vec3(1.0, 0.0, 0.0), 90);
-
 	objects->insert3DElement(beater);
 
 	// --------------------------------------------------------------------------
@@ -438,7 +464,7 @@ void PagRenderer::prepareOpenGL() {
 	points.push_back(glm::vec2(4.0, 3.0));
 	points.push_back(glm::vec2(4.5, 2.0));
 	points.push_back(glm::vec2(4.8, 0.0));
-	points.push_back(glm::vec2(5.0, 0.0)); 
+	points.push_back(glm::vec2(5.0, 0.0));
 	points.push_back(glm::vec2(5.2, 0.0));
 	points.push_back(glm::vec2(4.9, 2.0));
 	points.push_back(glm::vec2(3.9, 3.0));
@@ -448,9 +474,9 @@ void PagRenderer::prepareOpenGL() {
 	points.push_back(glm::vec2(0.0, 9.1));
 
 	PagRevolutionObject *flexoHead = new PagRevolutionObject(points, 2, 30);
-	
+
 	flexoHead->translateModel(glm::vec3(0.0, 0.0, 0.0));
-	flexoHead->setMaterial(glm::vec3(0.0, 0.8, 0.0), glm::vec3(0.0,0.8, 1.0), 12.0);
+	flexoHead->setMaterial(PagListMaterials::getInstance()->getMaterial(7));
 
 	points.clear();
 	points.push_back(glm::vec2(0.0, 0.0));
@@ -466,7 +492,7 @@ void PagRenderer::prepareOpenGL() {
 
 	bulb->translateModel(glm::vec3(0.0, 8.0, 0.0));
 	bulb->rotateModel(glm::vec3(1.0, 0.0, 0.0), 180);
-	bulb->setMaterial(glm::vec3(1.0, 1.0, 0.9), glm::vec3(1.0, 1.0, 0.9), 15.0f);
+	bulb->setMaterial(PagListMaterials::getInstance()->getMaterial(6));
 
 	points.clear();
 	points.push_back(glm::vec2(1.75, 0.0));
@@ -481,9 +507,9 @@ void PagRenderer::prepareOpenGL() {
 	points.push_back(glm::vec2(0.0, 3.2));
 
 	PagRevolutionObject *haft = new PagRevolutionObject(points, 2, 20);
-	
-	haft->setMaterial(glm::vec3(0.7, 0.7, 0.7), glm::vec3(0.7, 0.7, 0.7), 0.1f);
-	
+
+	haft->setMaterial(PagListMaterials::getInstance()->getMaterial(4));
+
 	haft->translateModel(glm::vec3(0.0, 2.0, 4.4));
 	haft->rotateModel(glm::vec3(1.0, 0.0, 0.0), 65);
 
@@ -514,7 +540,7 @@ void PagRenderer::prepareOpenGL() {
 
 	rotor->translateModel(glm::vec3(1.1, 4.2, 9.5));
 	rotor->rotateModel(glm::vec3(0.0, 0.0, 1.0), 90);
-	rotor->setMaterial(glm::vec3(0.7, 0.7, 0.7), glm::vec3(0.7, 0.7, 0.7), 0.1f);
+	rotor->setMaterial(PagListMaterials::getInstance()->getMaterial(4));
 
 	points.clear();
 	points.push_back(glm::vec2(0.0, 0.0));
@@ -536,7 +562,7 @@ void PagRenderer::prepareOpenGL() {
 
 	connexion->translateModel(glm::vec3(0.0, 3.25, 7.25));
 	connexion->rotateModel(glm::vec3(1.0, 0.0, 0.0), 65.0);
-	connexion->setMaterial(glm::vec3(0.0, 0.8, 0.0), glm::vec3(0.0, 0.8, 1.0), 12.0);
+	connexion->setMaterial(PagListMaterials::getInstance()->getMaterial(7));
 
 	bodyRotor->insert3DElement(flexoHead);
 	bodyRotor->insert3DElement(bulb);
@@ -567,19 +593,19 @@ void PagRenderer::prepareOpenGL() {
 
 	tube->translateModel(glm::vec3(0.0, 2.9, 11.4));
 	tube->rotateModel(glm::vec3(1.0, 0.0, 0.0), 130);
-	tube->setMaterial(glm::vec3(0.7, 0.7, 0.7), glm::vec3(0.7, 0.7, 0.7), 0.1f);
+	tube->setMaterial(PagListMaterials::getInstance()->getMaterial(4));
 
 	connexion2->translateModel(glm::vec3(0.0, 2.85, 11.4));
 	connexion2->rotateModel(glm::vec3(-1.0, 0.0, 0.0), 50.0);
-	connexion2->setMaterial(glm::vec3(0.0, 0.8, 0.0), glm::vec3(0.0, 0.8, 1.0), 12.0);	
-	
+	connexion2->setMaterial(PagListMaterials::getInstance()->getMaterial(7));
+
 	connexion3->translateModel(glm::vec3(0.0, -4.1, 19.8));
 	connexion3->rotateModel(glm::vec3(1.0, 0.0, 0.0), 130.0);
-	connexion3->setMaterial(glm::vec3(0.0, 0.8, 0.0), glm::vec3(0.0, 0.8, 1.0), 12.0);
-	
+	connexion3->setMaterial(PagListMaterials::getInstance()->getMaterial(7));
+
 	rotor2->translateModel(glm::vec3(1.1, -5.5, 21.8));
 	rotor2->rotateModel(glm::vec3(0.0, 0.0, 1.0), 90);
-	rotor2->setMaterial(glm::vec3(0.7, 0.7, 0.7), glm::vec3(0.7, 0.7, 0.7), 0.1f);
+	rotor2->setMaterial(PagListMaterials::getInstance()->getMaterial(4));
 
 	bodyRotor->translateModel(glm::vec3(0.0, 5.2, -1.0));
 	bodyRotor->rotateModel(glm::vec3(1.0, 0.0, 0.0), 30);
@@ -592,19 +618,19 @@ void PagRenderer::prepareOpenGL() {
 
 	connexion4->translateModel(glm::vec3(0.0, -7.4, 20.3));
 	connexion4->rotateModel(glm::vec3(1.0, 0.0, 0.0), 40.0);
-	connexion4->setMaterial(glm::vec3(0.0, 0.8, 0.0), glm::vec3(0.0, 0.8, 1.0), 12.0);
+	connexion4->setMaterial(PagListMaterials::getInstance()->getMaterial(7));
 
 	tube2->translateModel(glm::vec3(0.0, -15.8, 13.15));
 	tube2->rotateModel(glm::vec3(1.0, 0.0, 0.0), 40);
-	tube2->setMaterial(glm::vec3(0.7, 0.7, 0.7), glm::vec3(0.7, 0.7, 0.7), 0.1f);
+	tube2->setMaterial(PagListMaterials::getInstance()->getMaterial(4));
 
 	connexion5->translateModel(glm::vec3(0.0, -15.75, 13.15));
 	connexion5->rotateModel(glm::vec3(1.0, 0.0, 0.0), 220.0);
-	connexion5->setMaterial(glm::vec3(0.0, 0.8, 0.0), glm::vec3(0.0, 0.8, 1.0), 12.0);
+	connexion5->setMaterial(PagListMaterials::getInstance()->getMaterial(7));
 
 	rotor3->translateModel(glm::vec3(1.1, -17.6, 11.45));
 	rotor3->rotateModel(glm::vec3(0.0, 0.0, 1.0), 90);
-	rotor3->setMaterial(glm::vec3(0.7, 0.7, 0.7), glm::vec3(0.7, 0.7, 0.7), 0.1f);
+	rotor3->setMaterial(PagListMaterials::getInstance()->getMaterial(4));
 
 	bodyRotor3->insert3DElement(bodyRotor2);
 	bodyRotor3->insert3DElement(connexion4);
@@ -613,7 +639,7 @@ void PagRenderer::prepareOpenGL() {
 	bodyRotor3->insert3DElement(rotor3);
 
 	bodyRotor3->translateModel(glm::vec3(0.0, 28.3, -11.45));
-	
+
 	points.clear();
 	points.push_back(glm::vec2(0.0, 0.0));
 	points.push_back(glm::vec2(7.0, 0.0));
@@ -633,9 +659,9 @@ void PagRenderer::prepareOpenGL() {
 	points.push_back(glm::vec2(1.6, 10.0));
 	points.push_back(glm::vec2(0.0, 9.0));
 
-	PagRevolutionObject *base = new PagRevolutionObject(points, 2, 20);
-	
-	base->setMaterial(glm::vec3(0.0, 0.8, 0.0), glm::vec3(0.0, 0.8, 1.0), 12.0);
+	PagRevolutionObject *base = new PagRevolutionObject(points, 2, 40);
+
+	base->setMaterial(PagListMaterials::getInstance()->getMaterial(7));
 	base->translateModel(glm::vec3());
 	flexo->insert3DElement(bodyRotor3);
 	flexo->insert3DElement(base);
@@ -650,7 +676,7 @@ void PagRenderer::prepareOpenGL() {
 
 	PagPlane *board = new PagPlane(100.0, 80.0, 10.0, 8, 8);
 	board->translateModel(glm::vec3(-50.0, 0.0, -40.0));
-	board->setMaterial(glm::vec3(0.5, 0.2, 0.0), glm::vec3(0.2, 0.1, 0.0), 10.0);
+	board->setMaterial(PagListMaterials::getInstance()->getMaterial(8));
 
 	objects->insert3DElement(board);
 
@@ -660,7 +686,7 @@ void PagRenderer::prepareOpenGL() {
 
 	// - Crea el shader program que dibujará la geometría en forma de nube de puntos.
 	pointShader = new PagShaderProgram();
-	pointShader->createShaderProgram("pointShader");  
+	pointShader->createShaderProgram("pointShader");
 
 	// - Crea el shader program que dibujará la geometría en modo alambre.
 	linesShader = new PagShaderProgram();
@@ -674,17 +700,17 @@ void PagRenderer::prepareOpenGL() {
 	debugShader = new PagShaderProgram();
 	debugShader->createShaderProgram("debugShader");
 
-	// - Defino 3 luces, una de tipo puntual, otra de tipo direccional y otra tipo foco
-	PagPointLight *point = new PagPointLight(glm::vec3(0.3, 0.3, 0.1), glm::vec3(0.3, 0.3, 0.2), 
-		glm::vec3(13.0, 13.0, 13.0), 1.0f, 0.0f, 0.0f);
+	// - Defino 3 luces, una de tipo puntual, otra de tipo direccional, dos de tipo foco y una ambiental
+	PagPointLight *point = new PagPointLight(glm::vec3(0.4, 0.4, 0.2), glm::vec3(0.3, 0.3, 0.2),
+		glm::vec3(-15.0, 15.0, -30.0), 1.0f, 0.0f, 0.0f);
 
 	PagSpotLight *spot = new PagSpotLight(glm::vec3(0.6, 0.6, 0.4), glm::vec3(0.4, 0.4, 0.3),
 		glm::vec3(-1.0, -1.0, -1.0), glm::vec3(15.0, 15.0, 15.0), 20.0f, 60.0f, 0.1f, 0.05f, 0.0f);
-	
+
 	PagSpotLight *spot2 = new PagSpotLight(glm::vec3(0.8, 0.8, 0.5), glm::vec3(0.6, 0.6, 0.4),
 		glm::vec3(5.0, 6.0, 5.0), glm::vec3(4.0, 28.0, 4.0), 10.0f, 60.0f, 1.0f, 0.0f, 0.0f);
 
-	PagDirectionalLight *directional = new PagDirectionalLight(glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.3, 0.3, 0.3), 
+	PagDirectionalLight *directional = new PagDirectionalLight(glm::vec3(0.3, 0.3, 0.3),
 		glm::vec3(0.3, 0.3, 0.2), glm::vec3(10.0, -5.0, -10.0), 0.1f, 0.1f, 0.0f);
 
 	PagAmbientLight *ambient = new PagAmbientLight(glm::vec3(0.0, 0.0, 0.05));

@@ -17,8 +17,8 @@ void PagLightSource::set_strategy(PagLightApplication *strategy) {
 	_strategy = strategy;
 }
 
-void PagLightSource::execute(PagShaderProgram& ads, PagCamera camera) {
-	_strategy->execute(ads, camera);
+void PagLightSource::apply(PagShaderProgram& ads, PagCamera camera) {
+	_strategy->apply(ads, camera);
 }
 
 LightType PagLightSource::getType() {

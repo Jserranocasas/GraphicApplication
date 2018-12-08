@@ -2,6 +2,12 @@
 
 #include "PagLightApplication.h"
 
+/*
+ * @brief	Clase que representa un patron de diseño strategy
+ * @file	PagLightSource.h
+ * @author	Javier Serrano Casas
+ * @date	20-11-2018
+ */
 class PagLightSource {
 private:
 	PagLightApplication *_strategy;
@@ -12,6 +18,6 @@ public:
 	~PagLightSource();
 
 	void set_strategy(PagLightApplication *strategy);
-	void execute(PagShaderProgram& ads, PagCamera camera);
+	void apply(PagShaderProgram& ads, PagCamera camera);
 	LightType getType();
 };

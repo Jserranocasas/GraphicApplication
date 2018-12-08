@@ -46,6 +46,8 @@ public:
 	void drawAsTriangles(PagShaderProgram *shader, glm::mat4 vp, glm::mat4 v);
 	void drawAsPoints(PagShaderProgram *shader, glm::mat4 viewProject);
 	void drawAsLines(PagShaderProgram *shader, glm::mat4 viewProject);
+	void drawAsDebug(PagShaderProgram *shader, glm::mat4 viewProject);
+
 	bool isValid();
 };
 

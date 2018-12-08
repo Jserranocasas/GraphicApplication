@@ -4,11 +4,11 @@
 #include "PagEnumerations.h"
 
 /*
-* @brief Clase que representa una cámara virtual
-* @file	PagCamera.h
-* @author Javier Serrano Casas
-* @date	14-11-2018
-*/
+ * @brief Clase que representa una cámara virtual
+ * @file	PagCamera.h
+ * @author Javier Serrano Casas
+ * @date	14-11-2018
+ */
 class PagCamera {
 public:
 	PagCamera();

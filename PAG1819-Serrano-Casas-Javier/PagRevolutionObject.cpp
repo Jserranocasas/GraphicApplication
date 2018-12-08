@@ -464,3 +464,14 @@ void PagRevolutionObject::drawAsTriangles(PagShaderProgram *shader, glm::mat4 vp
 	if (has(PAG_BOTTOM_FAN))
 		bottom->drawTriangles(PAG_BOTTOM_FAN);
 }
+
+void PagRevolutionObject::drawAsDebug(PagShaderProgram *shader, glm::mat4 viewProject) {
+	if (has(PAG_TOP_FAN))
+		top->drawTriangles(PAG_TOP_FAN);
+
+	if (has(PAG_BODY))
+		body->drawTriangles(PAG_BODY);
+
+	if (has(PAG_BOTTOM_FAN))
+		bottom->drawTriangles(PAG_BOTTOM_FAN);
+}
