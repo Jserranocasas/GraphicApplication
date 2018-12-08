@@ -25,10 +25,10 @@ PagMaterial& PagMaterial::operator=(const PagMaterial &orig) {
 PagMaterial::~PagMaterial() {
 }
 
-void PagMaterial::sendUniform(PagShaderProgram shader) {
-	shader.setUniform("Shininess", shininess);
-	shader.setUniform("Kd", kd);
-	shader.setUniform("Ks", ks);
+void PagMaterial::sendUniform(PagShaderProgram *shader) {
+	shader->setUniform("Shininess", shininess);
+	shader->setUniform("Kd", kd);
+	shader->setUniform("Ks", ks);
 }
 
 void PagMaterial::setMaterial(glm::vec3 _kd, glm::vec3 _ks, float _shi) {

@@ -30,5 +30,6 @@ enum SizeViewport {
 enum LightType : int {
 	PAG_DIRECTIONAL = 0,
 	PAG_SPOT = 1,
-	PAG_POINT = 2
+	PAG_POINT = 2,
+	PAG_AMBIENT = 3
 };

@@ -8,6 +8,7 @@
 #include "PagPointLight.h"
 #include "PagStructures.h"
 #include "PagLightSource.h"
+#include "PagAmbientLight.h"
 #include "PagEnumerations.h"
 #include "PagShaderProgram.h"
 #include "PagRevolutionObject.h"
@@ -57,7 +58,7 @@ private:
 	PagCamera *camera;
 
 	// - Objetos de revolución de la escena
-	Pag3DGroup objects; 
+	Pag3DGroup *objects; 
 
 	// - Shader program que se usa para dibujar la geometría
 	PagShaderProgram *pointShader;

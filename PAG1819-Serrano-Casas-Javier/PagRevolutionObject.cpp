@@ -40,6 +40,17 @@ PagRevolutionObject::PagRevolutionObject(std::vector<glm::vec2> points,
 
 }
 
+PagRevolutionObject::PagRevolutionObject(const PagRevolutionObject &orig) {
+	delete body;
+	delete top;
+	delete bottom;
+
+	profile = orig.profile;
+	top = orig.top;
+	bottom = orig.bottom;
+	body = orig.body;
+}
+
 // - Operador de asignación de la clase PagSubdivision.
 PagRevolutionObject& PagRevolutionObject::operator=(const PagRevolutionObject &orig) {
 	delete body;
@@ -253,10 +264,9 @@ void PagRevolutionObject::computeTangents(PagRevObjParts part, unsigned int slic
 
 	// Para la tapa inferior
 	if (part == PAG_BOTTOM_FAN) {
-			for (unsigned int s = 0; s <= slices; s++) {
-				bottom->addTangent(glm::vec3(-sin(s*deltaRad), 0.0, -cos(s*deltaRad)));
-			}
-		
+		for (unsigned int s = 0; s <= slices; s++) {
+			bottom->addTangent(glm::vec3(-sin(s*deltaRad), 0.0, -cos(s*deltaRad)));
+		}
 	}
 	// Para la tapa superior	
 	else if (part == PAG_TOP_FAN) {

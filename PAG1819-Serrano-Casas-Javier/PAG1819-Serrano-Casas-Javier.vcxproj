@@ -126,6 +126,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Pag3DElement.cpp" />
     <ClCompile Include="Pag3DGroup.cpp" />
+    <ClCompile Include="PagAmbientLight.cpp" />
     <ClCompile Include="PagCamera.cpp" />
     <ClCompile Include="PagDirectionalLight.cpp" />
     <ClCompile Include="PagLightSource.cpp" />
@@ -142,6 +143,7 @@
   <ItemGroup>
     <ClInclude Include="Pag3DElement.h" />
     <ClInclude Include="Pag3DGroup.h" />
+    <ClInclude Include="PagAmbientLight.h" />
     <ClInclude Include="PagCamera.h" />
     <ClInclude Include="PagDirectionalLight.h" />
     <ClInclude Include="PagEnumerations.h" />
