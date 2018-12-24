@@ -43,10 +43,11 @@ PagVAO::PagVAO() : vao(0) {
 	glEnableVertexAttribArray(2);
 
 	// - Aquí se describen las características del puntero que permite a la GPU acceder a las
-	// tangentes
-	glVertexAttribPointer(2, sizeof(glm::vec3) / sizeof(GLfloat),
-		GL_FLOAT, GL_FALSE, sizeof(glm::vec3),
+	// texturas
+	glVertexAttribPointer(2, sizeof(glm::vec2) / sizeof(GLfloat),
+		GL_FLOAT, GL_FALSE, sizeof(glm::vec2),
 		((GLubyte *)NULL + (0)));
+
 
 	// - Se activa el VBO que se quiere rellenar
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
@@ -57,9 +58,9 @@ PagVAO::PagVAO() : vao(0) {
 	glEnableVertexAttribArray(3);
 
 	// - Aquí se describen las características del puntero que permite a la GPU acceder a las
-	// texturas
-	glVertexAttribPointer(3, sizeof(glm::vec2) / sizeof(GLfloat),
-		GL_FLOAT, GL_FALSE, sizeof(glm::vec2),
+	// tangentes
+	glVertexAttribPointer(3, sizeof(glm::vec3) / sizeof(GLfloat),
+		GL_FLOAT, GL_FALSE, sizeof(glm::vec3),
 		((GLubyte *)NULL + (0)));
 
 	// - Se generan los IBOs y se activan
@@ -161,17 +162,17 @@ void PagVAO::fill() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, posNorm.size() * sizeof(PagPosNorm),
 		posNorm.data(), GL_STATIC_DRAW);
 
-	// - Se activa el VBO de tangentes que se quiere rellenar
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[1]);
-	// - Se le pasa el array que contiene los datos
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, tangents.size() * sizeof(glm::vec3),
-		tangents.data(), GL_STATIC_DRAW);
-
 	// - Se activa el VBO de textura que se quiere rellenar
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[2]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[1]);
 	// - Se le pasa el array que contiene los datos
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, textures.size() * sizeof(glm::vec2),
 		textures.data(), GL_STATIC_DRAW);
+
+	// - Se activa el VBO de tangentes que se quiere rellenar
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[2]);
+	// - Se le pasa el array que contiene los datos
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, tangents.size() * sizeof(glm::vec3),
+		tangents.data(), GL_STATIC_DRAW);
 
 	// - Rellenamos los IBOs
 	// - Se activa el IBO que se quiere rellenar
@@ -217,6 +218,43 @@ void PagVAO::drawLines() {
 void PagVAO::drawTriangles(PagRevObjParts part) {
 	// - Se activa el VAO
 	glBindVertexArray(vao);
+	// - Se activa el IBO que contiene los índices adecuados al modo de dibujo que se quiera
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo[2]);
+
+	// - Se dibuja la malla ----------- 
+	if (part == PAG_TOP_FAN || part == PAG_BOTTOM_FAN) {
+		glDrawElements(GL_TRIANGLE_FAN, indexesTMesh.size(), GL_UNSIGNED_INT, NULL);
+	}
+	else {
+		glDrawElements(GL_TRIANGLE_STRIP, indexesTMesh.size(), GL_UNSIGNED_INT, NULL);
+	}
+}
+
+void PagVAO::drawTextures(PagRevObjParts part, std::vector<GLuint> texture) {
+	// - Se activa el VAO
+	glBindVertexArray(vao);
+
+	if (texture.size() == 1) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture[0]);
+	}
+
+	if (texture.size() == 2) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture[0]);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture[1]);
+	}
+
+	if (texture.size() == 3) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture[0]);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture[1]);		
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, texture[2]);
+	}
+
 	// - Se activa el IBO que contiene los índices adecuados al modo de dibujo que se quiera
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo[2]);
 

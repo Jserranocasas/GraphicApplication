@@ -5,8 +5,12 @@
 
 class PagTexture{
 public:
-	PagTexture(const char* filename);
+	PagTexture(const char* filename, GLfloat texturesMode, GLfloat wrap_s, GLfloat wrap_t);
+	PagTexture(const PagTexture &orig);
+	PagTexture& operator=(const PagTexture &orig);
 	~PagTexture();
 
-	void drawTexture(PagShaderProgram& shader, GLuint vaoObject, int indexesSize);
+	GLuint getTexture();
+private:
+	GLuint texture;
 };

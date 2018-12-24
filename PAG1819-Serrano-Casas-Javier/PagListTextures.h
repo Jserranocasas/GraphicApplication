@@ -13,7 +13,7 @@ public:
 	// - Este método prepara las texturas
 	void insertTexture(PagTexture *_texture);
 
-	PagTexture* getTexture(int i);
+	GLuint getTexture(int i);
 private:
 	// - Constructor es privado
 	PagListTextures();
@@ -22,5 +22,5 @@ private:
 	static PagListTextures *instance;
 
 	// - List de texturas.
-	std::vector<PagTexture> textures;
+	std::vector<PagTexture*> textures;
 };

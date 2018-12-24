@@ -15,12 +15,14 @@ public:
 	Pag3DElement();
 	~Pag3DElement();
 
+	virtual void drawAsTextures(PagShaderProgram *shader, glm::mat4 vp, glm::mat4 v, std::vector<GLuint> texture = std::vector<GLuint>()) = 0;
 	virtual void drawAsTriangles(PagShaderProgram *shader, glm::mat4 vp, glm::mat4 v) = 0;
 	virtual void drawAsPoints(PagShaderProgram *shader, glm::mat4 viewProject) = 0;
 	virtual void drawAsLines(PagShaderProgram *shader, glm::mat4 viewProject) = 0;
 	virtual void drawAsDebug(PagShaderProgram *shader, glm::mat4 viewProject) = 0;
+	virtual ElementType getElementType() = 0;
 
-	PagMaterial getMaterial();
+	PagMaterial& getMaterial();
 	glm::mat4x4 getModelMatrix();
 	void setMaterial(PagMaterial *_material);
 	void setModelMatrix(const glm::mat4x4& _matrixM);

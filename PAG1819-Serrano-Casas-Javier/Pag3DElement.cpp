@@ -8,11 +8,11 @@ Pag3DElement::Pag3DElement() : material() {
 Pag3DElement::~Pag3DElement() {
 }
 
-PagMaterial Pag3DElement::getMaterial() {
+PagMaterial& Pag3DElement::getMaterial() {
 	return material;
 }
 
-void Pag3DElement::setMaterial(PagMaterial *_material) {
+void Pag3DElement::setMaterial(PagMaterial* _material) {
 	material = *_material;
 }
 

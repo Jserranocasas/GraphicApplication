@@ -21,19 +21,23 @@ public:
 	PagVAO(const PagVAO &orig);
 	PagVAO& operator=(const PagVAO &orig);
 	~PagVAO();
+
 	std::vector<GLuint> getIndexesWireframe() const;
 	std::vector<GLuint> getIndexesTMesh() const;
 	std::vector<GLuint> getIndexesCloud() const;
 	std::vector<PagPosNorm> getPosNorm() const;
 	std::vector<glm::vec2> getTextures() const;
 	std::vector<glm::vec3> getTangents() const;
+
 	void addIndexWireFrame(GLuint index);
 	void addIndexTMesh(GLuint index);
 	void addIndexCloud(GLuint index);
 	void addPosNorm(PagPosNorm ppn);
 	void addTangent(glm::vec3 tang);
 	void addTexture(glm::vec2 txt);
-	void drawTriangles(PagRevObjParts part);
+
+	void drawTextures(PagRevObjParts part, std::vector<GLuint> texture = std::vector<GLuint>());
+	void drawTriangles(PagRevObjParts part); 
 	void drawPoints();
 	void drawLines();
 	void fill();

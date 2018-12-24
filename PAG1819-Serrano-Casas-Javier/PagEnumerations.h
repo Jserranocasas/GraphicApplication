@@ -3,7 +3,7 @@
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
 
-/* Enumerador para las partes de un objeto de revolución*/
+/* Enumerador para las partes de un objeto de revolución */
 enum PagRevObjParts : int {
 	PAG_BODY = 0, 
 	PAG_TOP_FAN = 1,
@@ -32,4 +32,11 @@ enum LightType : int {
 	PAG_SPOT = 1,
 	PAG_POINT = 2,
 	PAG_AMBIENT = 3
+};
+
+/* Enumerador para el tipo de elemento */
+enum ElementType : int {
+	PAG_GROUP = 0,
+	PAG_REVOLUTION = 1,
+	PAG_PLANE = 2,
 };

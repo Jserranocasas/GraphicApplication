@@ -73,6 +73,11 @@ PagRevolutionObject::~PagRevolutionObject(){
 	delete bottom;
 }
 
+// - Devuelve el tipo de elemento
+ElementType PagRevolutionObject::getElementType() {
+	return PAG_REVOLUTION;
+}
+
 // - Método que compueba si el perfil en el que se basa este objeto de 
 //   revolución es válido. Devuelve true si lo es y false en caso contrario
 bool PagRevolutionObject::isValid() {
@@ -406,7 +411,7 @@ void PagRevolutionObject::defineWireFrame(PagRevObjParts part, unsigned int slic
 			top->addIndexWireFrame(0xFFFFFFFF);
 		}
 	}
-	 //Para el cuerpo
+	//Para el cuerpo
 	else {
 		int height = body->getPosNorm().size() / (slices + 1);
 		
@@ -465,6 +470,19 @@ void PagRevolutionObject::drawAsTriangles(PagShaderProgram *shader, glm::mat4 vp
 		bottom->drawTriangles(PAG_BOTTOM_FAN);
 }
 
+/* - Método para dibujar la geometria y topologia como texturas. */
+void PagRevolutionObject::drawAsTextures(PagShaderProgram *shader, glm::mat4 vp, glm::mat4 v, std::vector<GLuint> texture) {
+	if (has(PAG_TOP_FAN))
+		top->drawTextures(PAG_TOP_FAN, texture);
+
+	if (has(PAG_BODY))
+		body->drawTextures(PAG_BODY, texture);
+
+	if (has(PAG_BOTTOM_FAN))
+		bottom->drawTextures(PAG_BOTTOM_FAN, texture);
+}
+
+/* - Método para dibujar la geometria y topologia como debug. */
 void PagRevolutionObject::drawAsDebug(PagShaderProgram *shader, glm::mat4 viewProject) {
 	if (has(PAG_TOP_FAN))
 		top->drawTriangles(PAG_TOP_FAN);

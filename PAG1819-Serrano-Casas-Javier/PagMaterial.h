@@ -1,6 +1,9 @@
 #pragma once
 
 #include "glm.hpp"
+#include <vector>
+#include "PagTexture.h"
+#include "PagListTextures.h"
 #include "PagShaderProgram.h"
 
 /*
@@ -18,11 +21,15 @@ public:
 	~PagMaterial();
 
 	void setMaterial(glm::vec3 _kd, glm::vec3 _ks, float _shi);
-	void sendUniform(PagShaderProgram *shader);
+	void addTexture(int texture);
+
 	glm::vec3 getKd();
 	glm::vec3 getKs();
 	float getShininess();
+	int getTexture(int i);
+	int numTextures();
 private:
-	glm::vec3 kd, ks;	//Constantes difusa y especular
-	float shininess;	//Propiedad de brillo para el modelo de Phong
+	std::vector<int> *textures;	// Texturas asociadas al Material
+	glm::vec3 kd, ks;			// Constantes difusa y especular
+	float shininess;			// Propiedad de brillo para el modelo de Phong
 };

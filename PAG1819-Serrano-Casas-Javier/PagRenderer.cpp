@@ -7,12 +7,13 @@
 #include "PagRenderer.h"
 #include "Pag3DGroup.h"
 #include "PagListMaterials.h"
+#include "PagListTextures.h"
 
 // - Inicializa el singleton.
 PagRenderer * PagRenderer::instance = NULL;
 
 // -----------------------  Métodos constructores  ---------------------
-PagRenderer::PagRenderer() : debug(false), lines(false), tmesh(true), points(false), debugOption (0) {
+PagRenderer::PagRenderer() : debug(false), lines(false), tmesh(false), points(false), textures(true), debugOption (0) {
 }
 
 PagRenderer::~PagRenderer() {
@@ -81,7 +82,6 @@ void PagRenderer::refreshCallback() {
 	}
 
 	if (tmesh) {	// - Si dibujar como triángulos sombreados activado
-
 		glEnable(GLenum(GL_BLEND));
 		glDepthFunc(GLenum(GL_LEQUAL));
 
@@ -125,9 +125,57 @@ void PagRenderer::refreshCallback() {
 
 			// - Asignamos los parámetros de iluminacion de tipo uniform del shader program. 
 			light[i]->apply(*ADSShader, *camera);
-
 			// - Dibujo el objeto como triángulos sombreados.
 			objects->drawAsTriangles(ADSShader, camera->getMatrixViewProject(), camera->getMatrixView());
+		}
+	}
+
+	if (textures) { // - Si dibujar como texturas activado
+		glEnable(GLenum(GL_BLEND));
+		glDepthFunc(GLenum(GL_LEQUAL));
+
+		// - Activamos el shader program que se va a usar.
+		texturesShader->use();
+
+		// - Buscamos el identificador de la subrutina para ads y textura
+		GLuint adsId1 = glGetSubroutineIndex(idAds, GL_FRAGMENT_SHADER, "adsDirectional");
+		GLuint adsId2 = glGetSubroutineIndex(idAds, GL_FRAGMENT_SHADER, "adsSpot");
+		GLuint adsId3 = glGetSubroutineIndex(idAds, GL_FRAGMENT_SHADER, "adsPoint");
+		GLuint adsId4 = glGetSubroutineIndex(idAds, GL_FRAGMENT_SHADER, "adsAmbient");
+
+		bool firstlight = true;
+
+		// - Realizamos multipass rendering
+		for (unsigned int i = 0; i < light.size(); i++) {
+			if (firstlight) {
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				firstlight = false;
+			}
+			else {
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			}
+
+			// - Activamos las subrutinas
+			if (light[i]->getType() == PAG_DIRECTIONAL) {
+				glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &adsId1);
+			}
+
+			if (light[i]->getType() == PAG_SPOT) {
+				glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &adsId2);
+			}
+
+			if (light[i]->getType() == PAG_POINT) {
+				glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &adsId3);
+			}
+
+			if (light[i]->getType() == PAG_AMBIENT) {
+				glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &adsId4);
+			}
+
+			// - Asignamos los parámetros de iluminacion de tipo uniform del shader program. 
+			light[i]->apply(*texturesShader, *camera);
+			// - Dibujo el objeto como texturas.
+			objects->drawAsTextures(texturesShader, camera->getMatrixViewProject(), camera->getMatrixView());
 		}
 	}
 
@@ -167,30 +215,42 @@ void PagRenderer::keyCallback(int key, int scancode, int action, int mods) {
 		lines = false;
 		tmesh = false;
 		debug = false;
+		textures = false;
 		break;
 	case 'W':
 		points = false;
 		lines = true;
 		tmesh = false;
 		debug = false;
+		textures = false;
 		break;
 	case 'T':
 		points = false;
 		lines = false;
 		tmesh = true;
-		debug = false;
+		debug = false;		
+		textures = false;
 		break;
 	case 'A':
 		points = true;
 		lines = true;
+		tmesh = false;
+		debug = false;
+		textures = true;
+		break;
+	case 'E':
+		points = false;
+		lines = false;
 		tmesh = true;
 		debug = false;
+		textures = true;
 		break;
 	case 'D':
 		points = false;
 		lines = false;
 		tmesh = false;
 		debug = true;
+		textures = false;
 		break;
 	case 'Z':
 		debugOption = 0;
@@ -223,13 +283,13 @@ void PagRenderer::keyCallback(int key, int scancode, int action, int mods) {
 		camera->setMode(PAG_CRANE);
 		break;
 	case '7':
-		camera->setView(glm::vec3(0.0, 50.0, 60.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+		camera->setView(glm::vec3(0.0, 50.0, -60.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 		break;
 	case '8':
 		camera->setView(glm::vec3(0.0, 80.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 0.0, 0.0));
 		break;
 	case '9':
-		camera->setView(glm::vec3(60.0, 50.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+		camera->setView(glm::vec3(-60.0, 50.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 		break;
 	default:
 		break;
@@ -305,23 +365,61 @@ void PagRenderer::prepareOpenGL() {
 
 	// -------------------- Defino la camara de visión -----------------------
 
-	camera = new PagCamera(glm::vec3(0.0, 50.0, 60.0), glm::vec3(0.0, 0.0, 0.0),
+	camera = new PagCamera(glm::vec3(0.0, 50.0, -60.0), glm::vec3(0.0, 0.0, 0.0),
 								glm::vec3(0.0, 1.0, 0.0), 60.0f, 0.1f, 200.0f);
 
 	objects = new Pag3DGroup();
 
+	// ------------------------- Defino las texturas -------------------------
+
+	PagListTextures::getInstance()->insertTexture(new PagTexture("Textures/Chess_Purple.png",		// Textura Marmol Morado		- 0
+		GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));		
+	PagListTextures::getInstance()->insertTexture(new PagTexture("Textures/Chess_Red.png",			// Textura Marmol Rojo			- 1
+		GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));		
+	PagListTextures::getInstance()->insertTexture(new PagTexture("Textures/Chess_Yellow.png",		// Textura Marmol Amarillo		- 2
+		GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));		
+	PagListTextures::getInstance()->insertTexture(new PagTexture("Textures/Chess_Blue.png",			// Textura Marmol Azul			- 3
+		GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));		
+	PagListTextures::getInstance()->insertTexture(new PagTexture("Textures/Table.png",				// Textura Mesa					- 4
+		GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));		
+	PagListTextures::getInstance()->insertTexture(new PagTexture("Textures/Bulb.png",				// Textura Bombilla				- 5
+		GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));		
+	PagListTextures::getInstance()->insertTexture(new PagTexture("Textures/Flexo.png",				// Textura Flexo				- 6
+		GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));		
+	PagListTextures::getInstance()->insertTexture(new PagTexture("Textures/Metal.png",				// Textura Metal				- 7
+		GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));		
+	PagListTextures::getInstance()->insertTexture(new PagTexture("Textures/Beater.png",				// Textura Batidora				- 8
+		GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));	
+	PagListTextures::getInstance()->insertTexture(new PagTexture("Textures/BeaterCRight.png",		// Textura Batidora				- 9
+			GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+	//PagListTextures::getInstance()->insertTexture(new PagTexture("Textures/Table-Brightness.png",	// Textura Brillo Mesa			- 10
+	//	GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));	
+	PagListTextures::getInstance()->insertTexture(new PagTexture("Textures/Table-Normals.png",		// Textura Normal Mesa			- 11
+			GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE));
+
 	// ------------------------ Defino los materiales ------------------------
 
-	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.5, 0.2, 0.6), glm::vec3(0.4, 0.4, 0.5), 30.0f)); // Morado Marmol	- 0
-	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.8, 0.2, 0.2), glm::vec3(0.6, 0.3, 0.3), 30.0f)); // Rojo Marmol		- 1
-	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.5, 0.5, 0.2), glm::vec3(0.5, 0.5, 0.3), 30.0f)); // Amarillo Marmol	- 2
-	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.3, 0.4, 0.3), 30.0f)); // Negro Marmol	- 3
-	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.9, 0.9, 0.9), glm::vec3(0.8, 0.8, 0.8), 5.5));   // Plateado Metal	- 4
-	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.2, 0.2, 0.8), glm::vec3(0.2, 0.2, 0.4), 85.0));  // Azul Plastico	- 5
-	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0), 1.0));   // Blanco Cristal	- 6
-	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.2, 0.8, 0.2), glm::vec3(0.2, 0.8, 0.5), 35.0));  // Verde Metal		- 7
-	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.5, 0.2, 0.0), glm::vec3(0.2, 0.1, 0.0), 10.0));	 // Marron Madera	- 8
-
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.5, 0.2, 0.6), glm::vec3(0.4, 0.4, 0.5), 30.0f)); // Morado Marmol		- 0
+	PagListMaterials::getInstance()->getMaterial(0)->addTexture(0);
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.8, 0.2, 0.2), glm::vec3(0.6, 0.3, 0.3), 30.0f)); // Rojo Marmol			- 1
+	PagListMaterials::getInstance()->getMaterial(1)->addTexture(1);
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.5, 0.5, 0.2), glm::vec3(0.5, 0.5, 0.3), 30.0f)); // Amarillo Marmol		- 2
+	PagListMaterials::getInstance()->getMaterial(2)->addTexture(2);
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.2, 0.2, 0.5), glm::vec3(0.3, 0.4, 0.5), 30.0f)); // Azul Marmol			- 3
+	PagListMaterials::getInstance()->getMaterial(3)->addTexture(3);
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.9, 0.9, 0.9), glm::vec3(0.8, 0.8, 0.8), 10.5));  // Plateado Metal		- 4
+	PagListMaterials::getInstance()->getMaterial(4)->addTexture(7);
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.2, 0.2, 0.8), glm::vec3(0.2, 0.2, 0.4), 85.0));  // Azul Plastico		- 5
+	PagListMaterials::getInstance()->getMaterial(5)->addTexture(8);
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0), 500.0)); // Blanco Cristal		- 6
+	PagListMaterials::getInstance()->getMaterial(6)->addTexture(5);
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.2, 0.8, 0.2), glm::vec3(0.2, 0.8, 0.5), 200.0));  // Verde Metal		- 7
+	PagListMaterials::getInstance()->getMaterial(7)->addTexture(6);
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.5, 0.2, 0.0), glm::vec3(0.2, 0.1, 0.0), 10.0));	 // Marron Madera		- 8
+	PagListMaterials::getInstance()->getMaterial(8)->addTexture(4);
+	//PagListMaterials::getInstance()->getMaterial(8)->addTexture(10);
+	PagListMaterials::getInstance()->insertMaterial(new PagMaterial(glm::vec3(0.2, 0.2, 0.8), glm::vec3(0.2, 0.2, 0.4), 85.0));  // Azul Plastico		- 9
+	PagListMaterials::getInstance()->getMaterial(9)->addTexture(9);
 
 	// ------------------ Defino los objetos de revolución -------------------
 	// ---------------------------------- Peon -------------------------------
@@ -408,7 +506,7 @@ void PagRenderer::prepareOpenGL() {
 
 	beaterUp->translateModel(glm::vec3(0.0, 21.1, 0.0));
 
-	beaterUp->setMaterial(PagListMaterials::getInstance()->getMaterial(5));
+	beaterUp->setMaterial(PagListMaterials::getInstance()->getMaterial(9));
 
 	points.clear();
 	points.push_back(glm::vec2(0.0, 0.0));
@@ -700,6 +798,10 @@ void PagRenderer::prepareOpenGL() {
 	debugShader = new PagShaderProgram();
 	debugShader->createShaderProgram("debugShader");
 
+	// - Crea el shader program que dibujará la geometría en modo debug.
+	texturesShader = new PagShaderProgram();
+	texturesShader->createShaderProgram("textureShader");
+
 	// - Defino 3 luces, una de tipo puntual, otra de tipo direccional, dos de tipo foco y una ambiental
 	PagPointLight *point = new PagPointLight(glm::vec3(0.4, 0.4, 0.2), glm::vec3(0.3, 0.3, 0.2),
 		glm::vec3(-15.0, 15.0, -30.0), 1.0f, 0.0f, 0.0f);
@@ -713,7 +815,7 @@ void PagRenderer::prepareOpenGL() {
 	PagDirectionalLight *directional = new PagDirectionalLight(glm::vec3(0.3, 0.3, 0.3),
 		glm::vec3(0.3, 0.3, 0.2), glm::vec3(10.0, -5.0, -10.0), 0.1f, 0.1f, 0.0f);
 
-	PagAmbientLight *ambient = new PagAmbientLight(glm::vec3(0.0, 0.0, 0.05));
+	PagAmbientLight *ambient = new PagAmbientLight(glm::vec3(0.1, 0.1, 0.15));
 
 	light.push_back(new PagLightSource(directional));
 	light.push_back(new PagLightSource(point));

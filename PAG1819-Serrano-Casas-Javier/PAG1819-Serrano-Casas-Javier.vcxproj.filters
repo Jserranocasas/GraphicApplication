@@ -175,5 +175,17 @@
     <None Include="ADSShader-frag.glsl">
       <Filter>Archivos de recursos</Filter>
     </None>
+    <None Include="textureShader-vert.glsl">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+    <None Include="textureShader-frag.glsl">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+    <None Include="bumpShader-frag.glsl">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+    <None Include="bumpShader-vert.glsl">
+      <Filter>Archivos de recursos</Filter>
+    </None>
   </ItemGroup>
 </Project>

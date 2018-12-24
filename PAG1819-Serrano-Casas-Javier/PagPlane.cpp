@@ -22,6 +22,18 @@ PagPlane::~PagPlane(){
 	}
 }
 
+// - Devuelve el tipo de elemento
+ElementType PagPlane::getElementType() {
+	return PAG_PLANE;
+}
+
+// - Dibuja los 6 lados del tablero con texturas
+void PagPlane::drawAsTextures(PagShaderProgram *shader, glm::mat4 vp, glm::mat4 v, std::vector<GLuint> texture) {
+	for (int i = 0; i < 6; i++) {
+		sides[i]->drawTextures(PAG_BODY, texture);
+	}
+}
+
 // - Dibuja los 6 lados del tablero como triangulos sombreados
 void PagPlane::drawAsTriangles(PagShaderProgram *shader, glm::mat4 vp, glm::mat4 v) {
 	for (int i = 0; i < 6; i++) {
@@ -70,7 +82,7 @@ void PagPlane::addPointsLevel(float width, float height, float depth, int tiling
 
 			aux.position = glm::vec3( j * incrementH, -depth * level, i * incrementV);
 
-			if (level == 0) {  // Normal de la cara superior del tablero
+			if (level == 0) {  // Normal de la cara superior del tablerow
 				aux.normal = glm::vec3(0.0, 1.0, 0.0);
 			}
 
@@ -81,12 +93,12 @@ void PagPlane::addPointsLevel(float width, float height, float depth, int tiling
 			sides[level]->addPosNorm(aux); //Para las caras superior e inferior
 
 			if (i == 0) { //Para la cara lejana del tablero
-				aux.normal = glm::vec3(0.0, 0.0, 1.0);
+				aux.normal = glm::vec3(0.0, 0.0, -1.0);
 				sides[2]->addPosNorm(aux);
 			}
 			 
 			if (i == tilingV) { //Para la cara cercana del tablero
-				aux.normal = glm::vec3(0.0, 0.0, -1.0);
+				aux.normal = glm::vec3(0.0, 0.0, 1.0);
 				sides[3]->addPosNorm(aux);
 			}
 
@@ -113,30 +125,31 @@ void PagPlane::addPointsLevel(float width, float height, float depth, int tiling
  * @param tilingV int. Número de divisiones verticales del plano
  */
 void PagPlane::addTexturesCoordenates(float width, float height, float depth, int tilingH, int tilingV) {
-	for (int s = 0; s < 2; s++) {
-		for (int i = 0; i <= tilingV; i++) { //Para la cara superior e inferior del tablero
-			for (int j = 0; j <= tilingH; j++) {
-				sides[s]->addTexture(glm::vec2(j / (1.0 * tilingH), i / (1.0 * tilingV)));
-			}
+	for (int i = 0; i <= tilingV; i++) {	//Para la cara superior del tablero
+		for (int j = tilingH; j >= 0; j--) {
+			sides[0]->addTexture(glm::vec2(j / (1.0 * tilingH), i / (1.0 * tilingV)));
 		}
 	}
 	
-	for (int s = 2; s < 4; s++) { //Para la cara cercana y lejana del tablero
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j <= tilingH; j++) {
-				sides[s]->addTexture(glm::vec2(j / (1.0 * tilingH), i));
-			}
+	for (int i = 0; i <= tilingV; i++) {	//Para la cara inferior del tablero
+		for (int j = 0; j <= tilingH; j++) {
+			sides[1]->addTexture(glm::vec2(j / (1.0 * tilingH), i / (1.0 * tilingV)));
 		}
 	}
 
-	for (int s = 4; s < 6; s++) { //Para la cara izquierda y derecha del tablero
-		for (unsigned int i = 0; i < 2; i++) {
-			for (int j = 0; j <= tilingV; j++) {
-				sides[s]->addTexture(glm::vec2(j / (1.0 * tilingH), i));
-			}
+	for (int i = 0; i < 2; i++) {	 //Para la cara cercana y derecha del tablero
+		for (int j = tilingH; j >= 0 ; j--) {
+			sides[2]->addTexture(glm::vec2(j / (1.0 * tilingH), i / 10.0));
+			sides[5]->addTexture(glm::vec2(j / (1.0 * tilingH), i / 10.0));
 		}
 	}
-
+	
+	for (int i = 0; i < 2; i++) {	//Para la cara lejana e izquierda del tablero
+		for (int j = tilingH; j >= 0; j--) {
+			sides[3]->addTexture(glm::vec2(j / (1.0 * tilingH), i / 10.0));
+			sides[4]->addTexture(glm::vec2(j / (1.0 * tilingH), i / 10.0));
+		}
+	}
 }
 
 /**
@@ -150,25 +163,25 @@ void PagPlane::addTexturesCoordenates(float width, float height, float depth, in
 void PagPlane::addTangentsCoordenates(float width, float height, float depth, int tilingH, int tilingV) {
 	for (int i = 0; i <= tilingV; i++) { //Para la cara superior del tablero
 		for (int j = 0; j <= tilingH; j++) {
-			sides[0]->addTangent(glm::vec3(0.0, 0.0, -1.0));
+			sides[0]->addTangent(glm::vec3(-1.0, 0.0, 0.0));
 		}
 	}
 	
 	for (int i = 0; i <= tilingV; i++) { //Para la cara inferior del tablero
 		for (int j = 0; j <= tilingH; j++) {
-			sides[1]->addTangent(glm::vec3(0.0, 0.0, 1.0));
+			sides[1]->addTangent(glm::vec3(1.0, 0.0, 0.0));
 		}
 	}
 
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j <= tilingH; j++) { //Para la cara lejana del tablero
-			sides[2]->addTangent(glm::vec3(-1.0, 0.0, 0.0));
+			sides[2]->addTangent(glm::vec3(0.0, 1.0, 0.0));
 		}
 	}
 	
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j <= tilingH; j++) { //Para la cara cercana del tablero
-			sides[3]->addTangent(glm::vec3(1.0, 0.0, 0.0));
+			sides[3]->addTangent(glm::vec3(0.0, -1.0, 0.0));
 		}
 	}
 

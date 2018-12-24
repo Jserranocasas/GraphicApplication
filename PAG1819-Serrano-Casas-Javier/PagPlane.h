@@ -14,7 +14,10 @@ public:
 	PagPlane(float width, float height, float depth, int tilingH, int tilingV);
 	~PagPlane();
 
+	ElementType getElementType();
+
 	// Métodos para dibujar como nube de puntos, modo de alambre o triangulos
+	void drawAsTextures(PagShaderProgram *shader, glm::mat4 vp, glm::mat4 v, std::vector<GLuint> texture = std::vector<GLuint>());
 	void drawAsTriangles(PagShaderProgram *shader, glm::mat4 vp, glm::mat4 v);
 	void drawAsPoints(PagShaderProgram *shader, glm::mat4 viewProject);
 	void drawAsLines(PagShaderProgram *shader, glm::mat4 viewProject);

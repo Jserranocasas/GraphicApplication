@@ -64,10 +64,11 @@ private:
 	PagShaderProgram *pointShader;
 	PagShaderProgram *linesShader;
 	PagShaderProgram *ADSShader;
+	PagShaderProgram *texturesShader;
 	PagShaderProgram *debugShader;
 
 	// - Booleanos para conocer el modo de pintar
-	bool points, lines, tmesh, debug;
+	bool points, lines, tmesh, debug, textures;
 
 	// - Entero con el modo de debug
 	int debugOption;

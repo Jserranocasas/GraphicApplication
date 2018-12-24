@@ -20,9 +20,9 @@ PagListTextures * PagListTextures::getInstance() {
 
 /* - Método que prepara los materiales */
 void PagListTextures::insertTexture(PagTexture *_texture) {
-	textures.push_back(*_texture);
+	textures.push_back(_texture);
 }
 
-PagTexture* PagListTextures::getTexture(int i) {
-	return &textures[i];
+GLuint PagListTextures::getTexture(int i) {
+	return textures.at(i)->getTexture();
 }

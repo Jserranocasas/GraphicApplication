@@ -29,7 +29,7 @@ void PagSpotLight::apply(PagShaderProgram& ads, PagCamera camera) {
 	ads.setUniform("c3", c3);
 
 	// La Iluminacion ambiental no la utilizare pero necesito pasarla por las subrutinas
-	ads.setUniform("Ia", glm::vec3());
+	ads.setUniform("Ia", glm::vec3(0.0, 0.0, 0.0));
 }
 
 LightType PagSpotLight::getType() {

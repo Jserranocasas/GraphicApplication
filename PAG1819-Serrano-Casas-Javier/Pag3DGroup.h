@@ -18,12 +18,15 @@ public:
 
 	Pag3DGroup& operator=(const Pag3DGroup& orig);
 	
+	ElementType getElementType();
+
 	// Métodos para insertar cualquier tipo de objeto 3D
 	void insert3DElement(PagPlane *element);
 	void insert3DElement(Pag3DGroup *element);
 	void insert3DElement(PagRevolutionObject *element);
 
 	// Modos de dibujar los objetos
+	void drawAsTextures(PagShaderProgram *shader, glm::mat4 vp, glm::mat4 v, std::vector<GLuint> texture = std::vector<GLuint>());
 	void drawAsTriangles(PagShaderProgram *shader, glm::mat4 vp, glm::mat4 v);
 	void drawAsPoints(PagShaderProgram *shader, glm::mat4 viewProject);
 	void drawAsLines(PagShaderProgram *shader, glm::mat4 viewProject);

@@ -171,6 +171,8 @@
   <ItemGroup>
     <None Include="ADSShader-frag.glsl" />
     <None Include="ADSShader-vert.glsl" />
+    <None Include="bumpShader-frag.glsl" />
+    <None Include="bumpShader-vert.glsl" />
     <None Include="debugShader-frag.glsl" />
     <None Include="debugShader-vert.glsl" />
     <None Include="linesShader-frag.glsl" />
@@ -179,6 +181,8 @@
     <None Include="meshShader-vert.glsl" />
     <None Include="pointShader-frag.glsl" />
     <None Include="pointShader-vert.glsl" />
+    <None Include="textureShader-frag.glsl" />
+    <None Include="textureShader-vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
