@@ -44,6 +44,11 @@ void PagRenderer::refreshCallback() {
 	// - Borra los buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	/*pointShader->setUniform("minHeight", 0.0f);
+	pointShader->setUniform("maxHeight", 20.0f);
+	pointShader->setUniform("minColor", glm::vec3(1.0, 1.0, 0.0));
+	pointShader->setUniform("maxColor", glm::vec3(0.0, 0.0, 1.0));*/
+
 	if (points && lines && tmesh) {
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(0.8f, 0.5f);

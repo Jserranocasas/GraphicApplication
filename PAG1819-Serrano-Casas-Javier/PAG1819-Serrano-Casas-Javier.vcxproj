@@ -171,6 +171,8 @@
   <ItemGroup>
     <None Include="ADSShader-frag.glsl" />
     <None Include="ADSShader-vert.glsl" />
+    <None Include="blackground-frag.glsl" />
+    <None Include="blackground-vert.glsl" />
     <None Include="bumpShader-frag.glsl" />
     <None Include="bumpShader-vert.glsl" />
     <None Include="debugShader-frag.glsl" />

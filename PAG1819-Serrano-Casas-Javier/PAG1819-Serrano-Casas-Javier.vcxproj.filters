@@ -187,5 +187,11 @@
     <None Include="bumpShader-vert.glsl">
       <Filter>Archivos de recursos</Filter>
     </None>
+    <None Include="blackground-vert.glsl">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+    <None Include="blackground-frag.glsl">
+      <Filter>Archivos de recursos</Filter>
+    </None>
   </ItemGroup>
 </Project>
