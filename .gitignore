@@ -22,10 +22,12 @@ bld/
 [Oo]bj/
 [Ll]og/
 
-*.sln
+/*.sln
 /Debug
 /PAG1819-Serrano-Casas-Javier/Debug
-/PAG1819-Serrano-Casas-Javier/*vcxproj*
+/PAG1819-Serrano-Casas-Javier/*vcxproj
+/PAG1819-Serrano-Casas-Javier/*vcxproj.user
+/PAG1819-Serrano-Casas-Javier/*vcxproj.filters
 
 # Visual Studio 2015 cache/options directory
 .vs/
