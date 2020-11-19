@@ -1,6 +1,6 @@
 # GraphicApplication
 
-Graphic Application with OpenGL in mode core profile, using **glew**, **glfw**, **glm** libraries. 
+Graphic Application with OpenGL in mode core profile, using **glew**, **glfw**, **glm** libraries and the principle of object revolution. 
 
 * **GLFW** ([OpenGL FrameWork](https://www.glfw.org/)) is a C++ library that provides an API to create windows with an associated *OpenGL Core Profile* graphical context and capable of receiving keyboard, mouse events.
 Objects designed with the principle of revolution. 
